@@ -1,84 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity"
+    android:background="#202b36">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/layout_group_chat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar_gchannel"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="@style/Widget.AppCompat.Toolbar"
-            app:popupTheme="@style/Theme.AppCompat.Light">
-
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_gchat"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="16dp"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toTopOf="@+id/text_gchat_indicator"
-        app:layout_constraintTop_toBottomOf="@+id/layout_group_chat" />
-
-    <TextView
-        android:id="@+id/text_gchat_indicator"
+    <Button
+        android:id="@+id/register_button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/view"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_below="@id/confirm_password"
+        android:layout_marginTop="64dp"
+        android:text="@string/register_button_text"
+        android:textColor="#FFFFFF"
+        android:background="#54788d"/>
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#e0e0e0"
-        app:layout_constraintBottom_toTopOf="@+id/layout_gchat_chatbox" />
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="147dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/ic_launcher" />
 
-    <RelativeLayout
-        android:id="@+id/layout_gchat_chatbox"
+    <ImageButton
+        android:id="@+id/camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/avatar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:src="@android:drawable/ic_menu_camera" />
+
+    <EditText
+        android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_below="@id/camera_button"
+        android:layout_marginTop="140dp"
+        android:hint="@string/username_hint"
+        android:inputType="text"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#bdbdbd"
+        android:backgroundTint="#FFFFFF"/>
 
+    <EditText
+        android:id="@+id/nickname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/username"
+        android:layout_marginTop="16dp"
+        android:hint="@string/nickname_hint"
+        android:inputType="text"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#bdbdbd"
+        android:backgroundTint="#FFFFFF"/>
 
-        <EditText
-            android:layout_marginStart="16dp"
-            android:id="@+id/edit_gchat_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/button_gchat_send"
-            android:background="@android:color/transparent"
-            android:hint="Enter Message"
-            android:inputType="text"
-            android:maxLines="6"
-            tools:ignore="Autofill" />
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nickname"
+        android:layout_marginTop="29dp"
+        android:hint="@string/password_hint"
+        android:inputType="textPassword"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#bdbdbd"
+        android:backgroundTint="#FFFFFF"/>
 
-        <Button
-            android:id="@+id/button_gchat_send"
-            android:layout_width="64dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackground"
-            android:text="Send"
-            android:textColor="@color/design_default_color_primary_variant" />
+    <EditText
+        android:id="@+id/confirm_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/password"
+        android:layout_marginTop="18dp"
+        android:hint="@string/confirm_password_hint"
+        android:inputType="textPassword"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#bdbdbd"
+        android:backgroundTint="#FFFFFF"/>
 
-    </RelativeLayout>
+    <Button
+        android:id="@+id/log_in_button"
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/confirm_password"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="63dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/log_in_button_text"
+        android:textColor="#FFFFFF"
+        android:background="#54788d"/>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
