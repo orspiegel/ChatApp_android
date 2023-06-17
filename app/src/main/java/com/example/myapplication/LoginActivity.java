@@ -10,14 +10,12 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
-import com.example.myapplication.ROOM_p.Contact;
 import com.example.myapplication.ROOM_p.ContactDao;
 import com.example.myapplication.ROOM_p.ContactDatabase;
 import com.example.myapplication.ROOM_p.User;
 import com.example.myapplication.ROOM_p.UserDao;
 import com.example.myapplication.ROOM_p.UserDatabase;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +27,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText username;
@@ -54,10 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         // DB operations
         userDB = Room.databaseBuilder(getApplicationContext(), UserDatabase.class, "UserDB").allowMainThreadQueries().build();
         userDao = userDB.userDao();
-
-        contactDB = Room.databaseBuilder(getApplicationContext(), ContactDatabase.class, "ContactDB").allowMainThreadQueries().build();
-        contactDao = contactDB.contactDao();
-
 
         loginButton.setOnClickListener(v -> {
             new Thread(() -> {
@@ -100,10 +93,6 @@ public class LoginActivity extends AppCompatActivity {
                         User loggedIn = getUserData(usernameValue, token);
 
                         userDao.insert(loggedIn);
-                        ArrayList<Contact> contacts = getContactList(token);
-                        for (int i = 0; i < contacts.size(); i++) {
-                            contactDao.insert(contacts.get(i));
-                        }
                         intent.putExtra("userName", loggedIn.getUserName());
                         intent.putExtra("displayName", loggedIn.getDisplayName());
                         intent.putExtra("image", loggedIn.getImage());
@@ -189,49 +178,6 @@ public class LoginActivity extends AppCompatActivity {
         }
         conn.disconnect();
         return user;
-    }
-
-    public ArrayList<Contact> getContactList(String token) throws IOException {
-        ArrayList<Contact> contactList = new ArrayList<>();
-        URL url = new URL("http://10.0.2.2:5000/api/Chats");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-        conn.setRequestProperty("Authorization","bearer "+ token);
-        if(conn.getResponseCode() == 200) {
-            InputStream in = conn.getInputStream();
-            String response = readStream(in);
-            try {
-                JSONArray jsonArray = new JSONArray(response);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    Contact c;
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String id = jsonObject.getString("id");
-                    JSONObject user = jsonObject.getJSONObject("user");
-                    String username = user.getString("username");
-                    String displayName = user.getString("displayName");
-                    String profilePic = user.getString("profilePic");
-                    JSONObject lastMessage = jsonObject.getJSONObject("lastMessage");
-                    String lastMessageId = lastMessage.getString("id");
-                    String lastMessageCreated = lastMessage.getString("created");
-                    String lastMessageContent = lastMessage.getString("content");
-                    c = new Contact(this.loggedInId,displayName, id, profilePic, lastMessageId, lastMessageCreated, lastMessageContent);
-                    // Check if the contact already exists in the database
-                    if (contactDao.get(id) == null) {
-                        // Contact doesn't exist, insert it into the database
-                        contactList.add(c);
-                    }
-                }
-                conn.disconnect();
-                return contactList;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Log.d("LoginActivity", "Error: " + conn.getResponseCode() + " " + conn.getResponseMessage());
-        }
-        conn.disconnect();
-        return null;
     }
 
 }

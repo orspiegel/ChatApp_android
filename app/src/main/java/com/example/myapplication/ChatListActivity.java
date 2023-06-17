@@ -14,11 +14,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import com.example.myapplication.ROOM_p.Contact;
-import com.example.myapplication.ROOM_p.ContactDao;
-import com.example.myapplication.ROOM_p.ContactDatabase;
 import com.example.myapplication.ROOM_p.User;
 import com.example.myapplication.Utils.Utils;
 import com.example.myapplication.recyclerview.ContactRecyclerViewAdapter;
@@ -36,17 +33,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListActivity extends AppCompatActivity {
-    private ContactDatabase contactDB;
-    private ContactDao contactDao;
-    List<Contact> contactList = new ArrayList<>();
-    User loggedInUSer;
-    String loggedInId;
-    private String enteredContactName;
+    private List<Contact> contactList = new ArrayList<>();
+    private User loggedInUser;
+    private String loggedInId;
     private String token;
+    private ContactRecyclerViewAdapter adapter;
 
     @Override
-    protected void onCreate(Bundle savedInstance) {
-        super.onCreate(savedInstance);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
 
         Bundle extras = getIntent().getExtras();
@@ -57,7 +52,6 @@ public class ChatListActivity extends AppCompatActivity {
         token = extras.getString("token");
         loggedInId = extras.getString("loggedInId");
 
-
         setUpUserHeader(userName, image, displayName, id);
 
         RecyclerView recyclerView = findViewById(R.id.rvContactRecyclerView);
@@ -65,27 +59,18 @@ public class ChatListActivity extends AppCompatActivity {
         TextView loggedInName = findViewById(R.id.speakerName);
 
         loggedInName.setText(displayName);
-        Log.d("ChatList", "DisplayNAme: " + displayName);
-//        loggedInImg.setImageResource();
 
-        setUpUserHeader(userName, image,displayName, id);
-
-        contactDB = Room.databaseBuilder(getApplicationContext(), ContactDatabase.class, "ContactDB").allowMainThreadQueries().build();
-        contactDao = contactDB.contactDao();
-        contactList = contactDao.getContactsByUserId(loggedInId);
-
-        ContactRecyclerViewAdapter adapter = new ContactRecyclerViewAdapter(this, contactList);
+        adapter = new ContactRecyclerViewAdapter(this, contactList, loggedInId);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         ImageView logOutBtn = findViewById(R.id.logoutBtn);
         logOutBtn.setOnClickListener(v -> {
             // navigate to Login Activity
-            startActivity(new Intent(this,
-                    com.example.myapplication.LoginActivity.class));
+            startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
-        //addContactBtn
+
         ImageView addContactBtn = findViewById(R.id.addContactBtn);
         addContactBtn.setOnClickListener(v -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ChatListActivity.this);
@@ -98,7 +83,7 @@ public class ChatListActivity extends AppCompatActivity {
 
             alertDialogBuilder.setPositiveButton("Add", (dialog, which) -> {
                 // Retrieve the entered contact name
-                enteredContactName = input.getText().toString().trim();
+                String enteredContactName = input.getText().toString().trim();
 
                 // Execute the AddContactAsyncTask to perform the network operation in the background
                 new AddContactAsyncTask().execute(token, enteredContactName);
@@ -112,10 +97,12 @@ public class ChatListActivity extends AppCompatActivity {
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
         });
+
+        new FetchContactsAsyncTask().execute(token);
     }
 
-    private void setUpUserHeader(String userName, String image,String displayName,String id) {
-        this.loggedInUSer =  new User(userName, image, displayName, id);
+    private void setUpUserHeader(String userName, String image, String displayName, String id) {
+        loggedInUser = new User(userName, image, displayName, id);
     }
 
     private class AddContactAsyncTask extends AsyncTask<String, Void, Integer> {
@@ -173,6 +160,63 @@ public class ChatListActivity extends AppCompatActivity {
             } else {
                 // Other error occurred
                 Toast.makeText(ChatListActivity.this, "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class FetchContactsAsyncTask extends AsyncTask<String, Void, List<Contact>> {
+
+        @Override
+        protected List<Contact> doInBackground(String... params) {
+            String token = params[0];
+            List<Contact> contactList = new ArrayList<>();
+
+            try {
+                URL url = new URL("http://10.0.2.2:5000/api/Chats");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                conn.setRequestProperty("Authorization", "bearer " + token);
+
+                if (conn.getResponseCode() == 200) {
+                    InputStream in = conn.getInputStream();
+                    String response = Utils.readStream(in);
+                    Log.d("ChatList", "response: " + response);
+
+                    JSONArray jsonArray = new JSONArray(response);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String id = jsonObject.getString("id");
+                        JSONObject user = jsonObject.getJSONObject("user");
+                        String username = user.getString("username");
+                        String displayName = user.getString("displayName");
+                        String profilePic = user.getString("profilePic");
+                        JSONObject lastMessage = jsonObject.getJSONObject("lastMessage");
+                        String lastMessageId = lastMessage.getString("id");
+                        String lastMessageCreated = lastMessage.getString("created");
+                        String lastMessageContent = lastMessage.getString("content");
+
+                        Contact contact = new Contact(loggedInId, displayName, id, profilePic, lastMessageId, lastMessageCreated, lastMessageContent);
+                        contactList.add(contact);
+                    }
+                } else {
+                    Log.d("LoginActivity", "Error: " + conn.getResponseCode() + " " + conn.getResponseMessage());
+                }
+
+                conn.disconnect();
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+
+            return contactList;
+        }
+
+        @Override
+        protected void onPostExecute(List<Contact> result) {
+            if (result != null) {
+                contactList.clear();
+                contactList.addAll(result);
+                adapter.notifyDataSetChanged();
             }
         }
     }

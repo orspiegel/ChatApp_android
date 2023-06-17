@@ -1,6 +1,8 @@
 package com.example.myapplication.recyclerview;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,34 +12,53 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.ChatActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.ROOM_p.Contact;
 
 import java.util.List;
 
 public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecyclerViewAdapter.MyViewHolder> {
-    Context context;
-   List<Contact> contactModels;
+    private Context context;
+    private List<Contact> contactModels;
+    private String loggedInId;
 
-    public ContactRecyclerViewAdapter(Context context, List<Contact> contactModels) {
+    public ContactRecyclerViewAdapter(Context context, List<Contact> contactModels, String loggedInId) {
         this.context = context;
         this.contactModels = contactModels;
+        this.loggedInId = loggedInId;
     }
 
     @NonNull
     @Override
-    public ContactRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.recycler_view, parent, false);
-        return new ContactRecyclerViewAdapter.MyViewHolder(view);
+        return new MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ContactRecyclerViewAdapter.MyViewHolder holder, int position) {
-        holder.tvContactName.setText(contactModels.get(position).getDisplayName());
-        holder.tvContactLastMsg.setText(contactModels.get(position).getLastMessageContent());
-        holder.tvContactLastDate.setText(contactModels.get(position).getLastMessageCreated());
-//        holder.imageView.setImageResource(contactModels.get(position).getProfilePic());
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        Contact contact = contactModels.get(position);
+
+        holder.tvContactName.setText(contact.getDisplayName());
+        holder.tvContactLastMsg.setText(contact.getLastMessageContent());
+        holder.tvContactLastDate.setText(contact.getLastMessageCreated());
+
+
+        holder.itemView.setOnClickListener(v -> {
+            Log.d("ContactRecyclerView", "contact clicked name" +contact.getDisplayName());
+
+            // Create an Intent to start the ChatActivity
+            Intent intent = new Intent(context, ChatActivity.class);
+            intent.putExtra("contactId", contact.getId());
+            intent.putExtra("contactName", contact.getDisplayName());
+            intent.putExtra("loggedInId", loggedInId);
+            // Add any other necessary data
+
+            // Start the ChatActivity
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -51,7 +72,7 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-//            imageView = itemView.findViewById(R.id.avatarView);
+            imageView = itemView.findViewById(R.id.avatarView);
             tvContactName = itemView.findViewById(R.id.contactName);
             tvContactLastMsg = itemView.findViewById(R.id.lastMsg);
             tvContactLastDate = itemView.findViewById(R.id.lastMsgDate);
