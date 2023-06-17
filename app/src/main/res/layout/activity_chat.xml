@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/background">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            app:cardBackgroundColor="@color/footer_icons"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/currentContactBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp">
+                        <ImageView
+                            android:id="@+id/backToContactsBtn"
+                            android:padding="15dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:background="?attr/selectableItemBackground"
+                            tools:ignore="LabelFor"
+                            android:src="@drawable/logout"
+                            />
+                        <ImageView
+                            android:id="@+id/settingsBtn"
+                            android:padding="15dp"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:background="?attr/selectableItemBackground"
+                            tools:ignore="LabelFor"
+                            android:src="@drawable/baseline_settings_24"
+                            />
+
+                        <ImageView
+                            android:id="@+id/currentContactImg"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:padding="5dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/backToContactsBtn"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/baseline_child_care_24" />
+
+                        <TextView
+                            android:id="@+id/currentContactName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Or Spiegel"
+                            android:textColor="@color/message_text"
+                            android:textSize="22dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/currentContactImg"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvContactRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/card"/>
+        <RelativeLayout
+            android:id="@+id/layout_gchat_chatbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:backgroundTint="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/background_border"
+            app:layout_constraintStart_toStartOf="parent">
+                <EditText
+                    android:id="@+id/message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:backgroundTint="#E6E6E6"
+                    android:layout_toStartOf="@+id/button_gchat_send"
+                    android:hint="@string/message_hint"
+                    android:inputType="text"
+                    android:maxLines="6"
+                    android:textColorHint="#bdbdbd"
+                    android:textColor="@color/design_default_color_background" />
+                <Button
+                    android:id="@+id/button_gchat_send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="Send"
+                    android:textColor="@color/white"
+                    android:textSize="11sp" />
+
+        </RelativeLayout>
+
+</RelativeLayout>

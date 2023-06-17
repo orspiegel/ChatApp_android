@@ -3,4 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#FFC3C3</color>
+    <color name="color_stroke">#FFFFFF</color>
+
+    <color name="background">#202b36</color>
+    <color name="curr_user_message">#487497</color>
+    <color name="other_user_message">#2e2942</color>
+    <color name="message_text">#ffffff</color>
+    <color name="footer_icons">#404E55</color>
+    <color name="buttons">#54788d</color>
 </resources>

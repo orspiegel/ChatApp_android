@@ -88,9 +88,7 @@ public class MainActivity extends AppCompatActivity {
                     String displayNameValue = nickname.getText().toString();
                     String passwordValue = password.getText().toString();
                     String profilePicValue = encodeImage(selectedImage);  // Assuming you have converted image to Base64 string
-
                     URL url = new URL("http://10.0.2.2:5000/api/Users");
-
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
@@ -106,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
 
                     DataOutputStream os = new DataOutputStream(conn.getOutputStream());
                     os.writeBytes(jsonParam.toString());
-
                     os.flush();
                     os.close();
 
