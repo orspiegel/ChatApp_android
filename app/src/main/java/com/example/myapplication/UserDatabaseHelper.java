@@ -13,7 +13,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class UserDatabaseHelper extends SQLiteOpenHelper {
-
     private static final String DATABASE_NAME = "Users.db";
     private static final String TABLE_NAME = "Users";
     private static final String COL_1 = "ID";

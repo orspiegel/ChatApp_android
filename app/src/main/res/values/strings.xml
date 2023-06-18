@@ -10,4 +10,24 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="submit">send</string>
+    <string name="message_hint">Enter message</string>
+    <string-array name="contacts_display_names">
+        <item>Or</item>
+        <item>John</item>
+        <item>Hila</item>
+    </string-array>
+
+    <string-array name="contacts_last_msgs">
+        <item>Bye!</item>
+        <item>Hi</item>
+        <item>OK?</item>
+    </string-array>
+
+    <string-array name="contacts_last_dates">
+        <item>16/06/2023</item>
+        <item>11/06/2023</item>
+        <item>06/06/2023</item>
+    </string-array>
+
 </resources>
