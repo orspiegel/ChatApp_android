@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Log.d("tag", "start start picture");
         avatar = findViewById(R.id.avatar);
         username = findViewById(R.id.username);
         nickname = findViewById(R.id.nickname);
@@ -80,14 +81,50 @@ public class MainActivity extends AppCompatActivity {
             intent.setAction(Intent.ACTION_GET_CONTENT);
             mGetContent.launch(Intent.createChooser(intent, "Select Picture"));
         });
+        Log.d("tag", "avatar");
 
         registerButton.setOnClickListener(v -> {
             new Thread(() -> {
                 try {
+                    Log.d("tag", "start register");
                     String usernameValue = username.getText().toString();
                     String displayNameValue = nickname.getText().toString();
                     String passwordValue = password.getText().toString();
+                    String confirmPasswordValue = confirmPassword.getText().toString();
+
+                    // Check for whitespace in the username
+                    if (usernameValue.contains(" ")) {
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Please enter a valid username - no space, tab or new-line characters allowed.", Toast.LENGTH_LONG).show());
+                        return;
+                    }
+
+                    // Check if password is valid
+                    if (!isPasswordValid(passwordValue)) {
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Password must be at least 8 characters long and contain letters and numbers.", Toast.LENGTH_LONG).show());
+                        return;
+                    }
+
+                    // Check if passwords match
+                    if (!passwordValue.equals(confirmPasswordValue)) {
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Passwords do not match.", Toast.LENGTH_LONG).show());
+                        return;
+                    }
+
+                    // Check display name
+                    if (displayNameValue.trim().isEmpty()) {
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Please enter a valid display name - must contain at least one letter or number.", Toast.LENGTH_LONG).show());
+                        return;
+                    }
+                    if (selectedImage == null) {
+                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Please select an image.", Toast.LENGTH_LONG).show());
+                        return;
+                    }
+
+                    // Continue with your code
+                    Log.d("tag", "encode picture");
                     String profilePicValue = encodeImage(selectedImage);  // Assuming you have converted image to Base64 string
+
+                    Log.d("RegisterDebug", "Values are: " + usernameValue + ", " + displayNameValue + ", " + passwordValue);
                     URL url = new URL("http://10.0.2.2:5000/api/Users");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
@@ -101,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                     jsonParam.put("displayName", displayNameValue);
                     jsonParam.put("password", passwordValue);
                     jsonParam.put("profilePic", profilePicValue);
-
+                    Log.d("RegisterDebug", "JSON object: " + jsonParam.toString());
                     DataOutputStream os = new DataOutputStream(conn.getOutputStream());
                     os.writeBytes(jsonParam.toString());
                     os.flush();
@@ -142,7 +179,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
-
+    private boolean isPasswordValid(String password) {
+        return password.length() >= 8 && password.matches(".*\\d.*") && password.matches(".*[a-zA-Z].*");
+    }
     private String encodeImage(Bitmap bm) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);

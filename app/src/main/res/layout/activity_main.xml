@@ -17,33 +17,39 @@
         android:textColor="#FFFFFF"
         android:background="#54788d"/>
 
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="147dp"
-        android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:src="@mipmap/ic_launcher" />
-
-    <ImageButton
-        android:id="@+id/camera_button"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/avatar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:src="@android:drawable/ic_menu_camera" />
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="147dp"
+            android:layout_height="100dp"
+            android:src="@drawable/baseline_account_circle_20" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/avatar"
+            android:layout_alignBottom="@+id/avatar"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="0dp"
+            android:rotationX="-2"
+            android:src="@drawable/baseline_add_a_photo_24" />
+
+    </RelativeLayout>
 
     <EditText
         android:id="@+id/username"
+        android:layout_marginTop="300dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/camera_button"
-        android:layout_marginTop="140dp"
+        android:backgroundTint="#FFFFFF"
         android:hint="@string/username_hint"
         android:inputType="text"
         android:textColor="#FFFFFF"
-        android:textColorHint="#bdbdbd"
-        android:backgroundTint="#FFFFFF"/>
+        android:textColorHint="#bdbdbd" />
 
     <EditText
         android:id="@+id/nickname"
@@ -51,11 +57,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/username"
         android:layout_marginTop="16dp"
+        android:backgroundTint="#FFFFFF"
         android:hint="@string/nickname_hint"
         android:inputType="text"
         android:textColor="#FFFFFF"
-        android:textColorHint="#bdbdbd"
-        android:backgroundTint="#FFFFFF"/>
+        android:textColorHint="#bdbdbd" />
 
     <EditText
         android:id="@+id/password"
