@@ -55,9 +55,11 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(v -> {
             new Thread(() -> {
                 try {
+                    Log.d("tag", "start login");
                     String usernameValue = username.getText().toString();
                     String passwordValue = password.getText().toString();
                     URL url = new URL("http://10.0.2.2:5000/api/Tokens");
+                    Log.d("log","send request");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
@@ -74,7 +76,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     os.flush();
                     os.close();
-
                     if(conn.getResponseCode() == 200) {
                         InputStream in = new BufferedInputStream(conn.getInputStream());
                         String token = readStream(in);

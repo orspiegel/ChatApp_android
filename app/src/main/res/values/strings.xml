@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">myapplication</string>
-    <string name="username_hint">user name</string>
-    <string name="nickname_hint">nick name</string>
-    <string name="password_hint">password</string>
-    <string name="confirm_password_hint">confrim password</string>
-    <string name="register_button_text">register</string>
-    <string name="log_in_button_text">log in</string>
+    <string name="username_hint">User Name</string>
+    <string name="nickname_hint">Nick Name</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confrim password</string>
+    <string name="register_button_text">Register</string>
+    <string name="log_in_button_text">Login</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
