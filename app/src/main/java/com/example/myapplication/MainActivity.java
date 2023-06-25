@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,15 +18,16 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
-import org.json.JSONObject;
+import com.example.myapplication.Entites.User;
+import com.example.myapplication.ViewModels.UserViewModel;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ImageView avatar;
@@ -36,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText password;
     private EditText confirmPassword;
     private Bitmap selectedImage;
+    private UserViewModel userViewModel;
 
-    private com.example.myapplication.UserDatabaseHelper dbHelper;
-
+//    private com.example.myapplication.UserDatabaseHelper dbHelper;
     // Create an ActivityResultLauncher
     private final ActivityResultLauncher<Intent> mGetContent = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
                         Uri selectedImageUri = data.getData();
                         if (null != selectedImageUri) {
                             avatar.setImageURI(selectedImageUri);
-
                             try {
                                 selectedImage = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
                             } catch (IOException e) {
@@ -65,7 +64,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d("tag", "start start picture");
+
+//        UserAPI userAPI = new UserAPI();
+//        userAPI.get();
+
+        // TODO: contacts
+//        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        UserAdapter adapter = new UserAdapter();
+//        recyclerView.setAdapter(adapter);
+
+        // TEST - Or
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel.getAllUsers().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> users) {
+                // update recyclerView
+            }
+        });
+        // TEST end - OR
+        Log.d("tag", "start point");
         avatar = findViewById(R.id.avatar);
         username = findViewById(R.id.username);
         nickname = findViewById(R.id.nickname);
@@ -73,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         confirmPassword = findViewById(R.id.confirm_password);
         Button registerButton = findViewById(R.id.register_button2);
 
-        dbHelper = new com.example.myapplication.UserDatabaseHelper(this);
+//        dbHelper = new com.example.myapplication.UserDatabaseHelper(this);
 
         avatar.setOnClickListener(v -> {
             Intent intent = new Intent();
@@ -84,9 +102,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("tag", "avatar");
 
         registerButton.setOnClickListener(v -> {
-            new Thread(() -> {
                 try {
-                    Log.d("tag", "start register");
+                    Log.d("MainActivity", "start register");
                     String usernameValue = username.getText().toString();
                     String displayNameValue = nickname.getText().toString();
                     String passwordValue = password.getText().toString();
@@ -94,83 +111,83 @@ public class MainActivity extends AppCompatActivity {
 
                     // Check for whitespace in the username
                     if (usernameValue.contains(" ")) {
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Please enter a valid username - no space, tab or new-line characters allowed.", Toast.LENGTH_LONG).show());
+                        Toast.makeText(MainActivity.this, "Please enter a valid username - no space, tab or new-line characters allowed.", Toast.LENGTH_LONG).show();
                         return;
                     }
 
                     // Check if password is valid
                     if (!isPasswordValid(passwordValue)) {
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Password must be at least 8 characters long and contain letters and numbers.", Toast.LENGTH_LONG).show());
+                        Toast.makeText(MainActivity.this, "Password must be at least 8 characters long and contain letters and numbers.", Toast.LENGTH_LONG).show();
                         return;
                     }
 
                     // Check if passwords match
                     if (!passwordValue.equals(confirmPasswordValue)) {
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Passwords do not match.", Toast.LENGTH_LONG).show());
+                       Toast.makeText(MainActivity.this, "Passwords do not match.", Toast.LENGTH_LONG).show();
                         return;
                     }
 
                     // Check display name
                     if (displayNameValue.trim().isEmpty()) {
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Please enter a valid display name - must contain at least one letter or number.", Toast.LENGTH_LONG).show());
+                        Toast.makeText(MainActivity.this, "Please enter a valid display name - must contain at least one letter or number.", Toast.LENGTH_LONG).show();
                         return;
                     }
                     if (selectedImage == null) {
-                        runOnUiThread(() -> Toast.makeText(MainActivity.this, "Please select an image.", Toast.LENGTH_LONG).show());
+                       Toast.makeText(MainActivity.this, "Please select an image.", Toast.LENGTH_LONG).show();
                         return;
                     }
 
                     // Continue with your code
                     Log.d("tag", "encode picture");
                     String profilePicValue = encodeImage(selectedImage);  // Assuming you have converted image to Base64 string
-
                     Log.d("RegisterDebug", "Values are: " + usernameValue + ", " + displayNameValue + ", " + passwordValue);
-                    URL url = new URL("http://10.0.2.2:5000/api/Users");
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
 
-                    JSONObject jsonParam = new JSONObject();
-                    jsonParam.put("username", usernameValue);
-                    jsonParam.put("displayName", displayNameValue);
-                    jsonParam.put("password", passwordValue);
-                    jsonParam.put("profilePic", profilePicValue);
-                    Log.d("RegisterDebug", "JSON object: " + jsonParam.toString());
-                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                    os.writeBytes(jsonParam.toString());
-                    os.flush();
-                    os.close();
-
-                    System.out.println("Response Code: " + conn.getResponseCode());
-                    System.out.println("Response Message: " + conn.getResponseMessage());
+//                    URL url = new URL("http://10.0.2.2:5000/api/Users");
+//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//                    conn.setRequestMethod("POST");
+//                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+//                    conn.setRequestProperty("Accept", "application/json");
+//                    conn.setDoOutput(true);
+//                    conn.setDoInput(true);
+//
+//                    JSONObject jsonParam = new JSONObject();
+//                    jsonParam.put("username", usernameValue);
+//                    jsonParam.put("displayName", displayNameValue);
+//                    jsonParam.put("password", passwordValue);
+//                    jsonParam.put("profilePic", profilePicValue);
+//                    Log.d("RegisterDebug", "JSON object: " + jsonParam.toString());
+//                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+//                    os.writeBytes(jsonParam.toString());
+//                    os.flush();
+//                    os.close();
+//
+//                    System.out.println("Response Code: " + conn.getResponseCode());
+//                    System.out.println("Response Message: " + conn.getResponseMessage());
 
                     // Save user to SQLite database
                     ArrayList<String> contactList = new ArrayList<>();
-                    long newRowId = dbHelper.insertData(usernameValue, passwordValue, displayNameValue, profilePicValue, contactList, false);
-                    if (newRowId == -1) {
-                        System.out.println("Error occurred while inserting user data into SQLite database.");
-                    } else {
-                        System.out.println("User data inserted into SQLite database with row ID: " + newRowId);
-                    }
-                    Cursor res = dbHelper.getAllData();
-                    while (res.moveToNext()) {
-                        String userData = "Row ID: " + res.getString(0) +
-                                " Username: " + res.getString(1) +
-                                " Password: " + res.getString(2) +
-                                " isAuthenticated: " + res.getString(3) +
-                                " Contact List: " + res.getString(4);
-                        Log.d("DBData", userData);
-                    }
-                    Intent intent = new Intent(MainActivity.this, com.example.myapplication.LoginActivity.class);
-                    startActivity(intent);
-                    conn.disconnect();
+//                    long newRowId = dbHelper.insertData(usernameValue, passwordValue, displayNameValue, profilePicValue, contactList, false);
+//                    if (newRowId == -1) {
+//                        System.out.println("Error occurred while inserting user data into SQLite database.");
+//                    } else {
+//                        System.out.println("User data inserted into SQLite database with row ID: " + newRowId);
+//                    }
+//                    Cursor res = dbHelper.getAllData();
+//                    while (res.moveToNext()) {
+//                        String userData = "Row ID: " + res.getString(0) +
+//                                " Username: " + res.getString(1) +
+//                                " Password: " + res.getString(2) +
+//                                " isAuthenticated: " + res.getString(3) +
+//                                " Contact List: " + res.getString(4);
+//                        Log.d("DBData", userData);
+//                    }
+//                    Intent intent = new Intent(MainActivity.this, com.example.myapplication.LoginActivity.class);
+//                    startActivity(intent);
+//                    conn.disconnect();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }).start();
+
         });
 
         Button loginButton = findViewById(R.id.log_in_button);

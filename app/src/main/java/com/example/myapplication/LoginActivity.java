@@ -1,43 +1,24 @@
 package com.example.myapplication;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
-import com.example.myapplication.ROOM_p.ContactDao;
-import com.example.myapplication.ROOM_p.ContactDatabase;
-import com.example.myapplication.ROOM_p.User;
-import com.example.myapplication.ROOM_p.UserDao;
-import com.example.myapplication.ROOM_p.UserDatabase;
+import com.example.myapplication.DB.UsersDB;
+import com.example.myapplication.Dao.UserDao;
+import com.example.myapplication.api.UserAPI;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements UserAPI.TokenCallback{
     private EditText username;
     private EditText password;
-    private UserDatabase userDB;
+    private UsersDB userDB;
     private UserDao userDao;
-    private String loggedInId;
-
-    private ContactDatabase contactDB;
-    private ContactDao contactDao;
-
+    private UserAPI userAPI;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,79 +26,53 @@ public class LoginActivity extends AppCompatActivity {
 
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
+//        TextView loginMsg =
+
+        userDB = UsersDB.getInstance(this);
+        userDao = userDB.userDao();
+
 
         Button loginButton = findViewById(R.id.login_button);
 
-        // DB operations
-        userDB = Room.databaseBuilder(getApplicationContext(), UserDatabase.class, "UserDB").allowMainThreadQueries().build();
-        userDao = userDB.userDao();
-
+        userAPI = new UserAPI(userDao);
+//        userAPI.getAllUsers();
         loginButton.setOnClickListener(v -> {
-            new Thread(() -> {
-                try {
-                    Log.d("tag", "start login");
-                    String usernameValue = username.getText().toString();
-                    String passwordValue = password.getText().toString();
-                    URL url = new URL("http://10.0.2.2:5000/api/Tokens");
-                    Log.d("log","send request");
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
+            String enteredUsername = username.getText().toString().trim();
+            String enteredPassword = password.getText().toString().trim();
+            userAPI.getToken(enteredUsername, enteredPassword, this);
+//            String savedToken = Utils.retrieveTokenFromSharedPreferences();
+            String savedToken = MyApplication.getToken();
+            Log.d("LoginActivity","Token is "+savedToken);
+//            userAPI.login(enteredUsername, enteredPassword, savedToken);
 
-                    JSONObject jsonParam = new JSONObject();
-                    jsonParam.put("username", usernameValue);
-                    jsonParam.put("password", passwordValue);
 
-                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                    os.writeBytes(jsonParam.toString());
-
-                    os.flush();
-                    os.close();
-                    if(conn.getResponseCode() == 200) {
-                        InputStream in = new BufferedInputStream(conn.getInputStream());
-                        String token = readStream(in);
-                        // Store token in shared preferences
-                        SharedPreferences sharedPreferences = getSharedPreferences("myapplication", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("token", token);
-                        editor.apply();
-
-                        UserDatabaseHelper dbHelper = new UserDatabaseHelper(LoginActivity.this);
-                        dbHelper.updateUserAuthentication(usernameValue, true);
-                        // Navigate to other activity
-                        Intent intent = new Intent(LoginActivity.this,
-                                com.example.myapplication.ChatListActivity.class);
-
-                        User loggedIn = getUserData(usernameValue, token);
-
-                        userDao.insert(loggedIn);
-                        intent.putExtra("userName", loggedIn.getUserName());
-                        intent.putExtra("displayName", loggedIn.getDisplayName());
-                        intent.putExtra("image", loggedIn.getImage());
-                        intent.putExtra("UserId", loggedIn.getUserId());
-                        intent.putExtra("token", token);
-                        intent.putExtra("loggedInId", this.loggedInId);
-
-                        Log.d("LoginActivity", "data passed to chats screen: " + loggedIn.getUserName() + loggedIn.getDisplayName()+ loggedIn.getImage()+ loggedIn.getUserId());
-
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        System.out.println("Login failed: " + conn.getResponseMessage());
-                    }
-
-                    conn.disconnect();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
+//            userAPI.logInWithToken(enteredUsername, enteredPassword);
+//
+//            // Check if username and password are entered
+//            if (enteredUsername.isEmpty() || enteredPassword.isEmpty()) {
+//                Toast.makeText(LoginActivity.this, "Please enter both username and password.", Toast.LENGTH_SHORT).show();
+//            } else {
+//                new Thread(()-> {
+//                    loggedIn = userDao.getUserByUsernameAndPassword(enteredUsername, enteredPassword);
+//                    if (loggedIn != null) {
+//                        // User login successful
+//                        Toast.makeText(LoginActivity.this, "Login successful.", Toast.LENGTH_SHORT).show();
+//
+//                        // TODO: Start the main chat activity or any other desired activity
+//                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//                        finish();
+//                    } else {
+//                        // Invalid username or password
+//                        Log.d("LoginActivity", "logged in is null");
+////                        Toast.makeText(LoginActivity.this, "Invalid username or password.", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                }).start();
         });
 
         Button registerButton = findViewById(R.id.register_button);
         registerButton.setOnClickListener(v -> {
+            Log.d("LoginActivity", "registering");
             // navigate to Register Activity
             startActivity(new Intent(LoginActivity.this,
                     com.example.myapplication.MainActivity.class));
@@ -125,60 +80,24 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private String readStream(InputStream in) {
-        BufferedReader reader = null;
-        StringBuilder sb = new StringBuilder();
-        try {
-            reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return sb.toString();
-    }
-    public User getUserData(String userName, String token) throws IOException {
-        Log.d("LoginActivity", "got into Chat activity");
-        URL url = new URL("http://10.0.2.2:5000/api/Users/" + userName);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-        conn.setRequestProperty("Authorization","bearer "+ token);
-        Log.d("LoginActivity", "Res code:" + conn.getResponseCode());
-        User user = null;
-        JSONObject responseJson = null;
+    @Override
+    public void onTokenReceived(String token) {
+        Log.d("LoginActivity", "Token received is " + token);
+        String enteredUsername = username.getText().toString().trim();
+        String enteredPassword = password.getText().toString().trim();
+        userAPI.login(enteredUsername, enteredPassword, token);
 
-        if(conn.getResponseCode() == 200) {
-            InputStream in = conn.getInputStream();
-            String response = readStream(in);
-            try {
-                responseJson = new JSONObject(response);
-                conn.disconnect();
 
-                String id = responseJson.getString("_id");
-                this.loggedInId = id;
-                String username = responseJson.getString("username");
-                String displayName = responseJson.getString("displayName");
-                String profilePic = responseJson.getString("profilePic");
-                user = new User(username, profilePic, displayName, id);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Log.d("LoginActivity", "Error: " + conn.getResponseCode() + " " + conn.getResponseMessage());
-        }
-        conn.disconnect();
-        return user;
     }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
+    }
+//    private String retrieveTokenFromSharedPreferences() {
+//        SharedPreferences sharedPreferences = MyApplication.context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+//        return sharedPreferences.getString("token", null);
+//    }
+
 
 }
