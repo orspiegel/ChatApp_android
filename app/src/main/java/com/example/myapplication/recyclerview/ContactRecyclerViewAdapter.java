@@ -1,7 +1,6 @@
 package com.example.myapplication.recyclerview;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.ChatActivity;
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.R;
 
@@ -23,19 +20,29 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
     private Context context;
     private List<Contact> contactList;
+    private OnContactClickListener onContactClickListener; // New listener
 
-    public ContactRecyclerViewAdapter(Context context, List<Contact> contactList) {
+    public ContactRecyclerViewAdapter(Context context) {
         this.context = context;
-        this.contactList = contactList;
+        Log.d("adapter", "Entered to adapter");
     }
 
     public void setContactList(List<Contact> contactList) {
         this.contactList = contactList;
+        notifyDataSetChanged();
+    }
+
+    public void setOnContactClickListener(OnContactClickListener listener) {
+        this.onContactClickListener = listener;
+    }
+
+    public interface OnContactClickListener {
+        void onContactClick(Contact contact);
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.recycler_view, parent, false);
         return new MyViewHolder(view);
@@ -49,20 +56,19 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
         holder.tvContactLastDate.setText(contact.getLastMsgDate());
 
         holder.itemView.setOnClickListener(v -> {
-            Log.d("ContactRecyclerView", "contact clicked name" + contact.getContactName());
-            // Create an Intent to start the ChatActivity
-            Intent intent = new Intent(context, ChatActivity.class);
-            intent.putExtra("contactId", contact.getId());
-            intent.putExtra("contactName", contact.getContactName());
-            // Add any other necessary data
-            // Start the ChatActivity
-            context.startActivity(intent);
+            if (onContactClickListener != null) {
+                onContactClickListener.onContactClick(contact);
+            }
         });
     }
 
     @Override
     public int getItemCount() {
-        return contactList.size();
+        if (contactList != null) {
+            return contactList.size();
+        } else {
+            return 0;
+        }
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

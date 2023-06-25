@@ -7,13 +7,11 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.myapplication.Dao.ContactDao;
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.MyApplication;
+import com.example.myapplication.Objects.ChatResponse;
+import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.R;
-import com.example.myapplication.State.LoggedUser;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -40,60 +38,107 @@ public class ContactAPI {
         this.contactDao = contactDao;
         this.contactList = contactList;
     }
-
-
-    public void getAllContacts(String token){
-        Call<JsonArray> call = webServiceAPI.getContactsList("bearer " + token);
+    public void getAllContacts(String token, ContactsCallback callback){
+        Call<List<ChatResponse>> call = webServiceAPI.getContactsList("bearer " + token);
         Log.d("ContactAPI", "In contactAPI get all contacts, token: "+token);
-        call.enqueue(new Callback<JsonArray>() {
+        call.enqueue(new Callback<List<ChatResponse>>() {
             @Override
-            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
-                Log.d("ContactAPI", "Response value: "+response.body());
+            public void onResponse(Call<List<ChatResponse>> call, Response<List<ChatResponse>> response) {
+                Log.d("ContactAPI", "Response value: " + response.body());
                 new Thread(() -> {
-                    String jsonString = response.body().toString();
-                    Log.i("onResponse", jsonString);
-                    Type listType = new TypeToken<List<Contact>>() {}.getType();
-                    List<Contact> yourList = new Gson().fromJson(jsonString, listType);
-                    Log.i("onResponse", yourList.toString());
-//                    contactList = yourList;
-
                     if (response.body() != null) {
+                        List<Contact> contParsedList = new ArrayList<>();
+                        Log.d("Contacts", "contact list response type: "+response.body());
+                        for (ChatResponse c : response.body()) {
+                            Log.i("Chat response", "Res: "+c);
+                            Log.i("Chat response", "Res: "+c.getUser().getDisplayName());
+                            Contact contact = new Contact();
+                            contact.setContactName(c.getUser().getDisplayName());
+                            contact.setUserName(c.getUser().getUsername());
+                            contact.setContactPic(c.getUser().getProfilePic());
+                            contact.setId(c.getId());
+                            if (c.getLastMessage() != null) {
+                                contact.setLastMsg(c.getLastMessage().getContent());
+                                contact.setLastMsgDate(c.getLastMessage().getCreated());
+                            }
+                            contParsedList.add(contact);
+                        }
                         contactDao.deleteAllContacts();
-                        contactDao.insertContactList(yourList);
+                        for (Contact c : contParsedList) {
+                            Log.i("onResponse contact", "Contact " + c.getUserName());
+                            contactDao.insert(c);
+                            Log.d("ContactAPI", "Contact " + c.getContactName() + " inserted to contacts list");
+                        }
+                        callback.onContactsRecieved();
+//
+                        contactList.postValue(contactDao.getAllContacts());
+                    }
+                }).start();
+            }
+            @Override
+            public void onFailure(Call<List<ChatResponse>> call, Throwable t) {
+                Log.d("ContactAPI", "Response error: "+t);
+            }
+        });
+    }
+    public void addContact(String username) {
+        Call<ChatResponse> call = webServiceAPI.addContact("bearer " + MyApplication.getToken(), username);
+        call.enqueue(new Callback<ChatResponse>() {
+            @Override
+            public void onResponse(Call<ChatResponse> call, Response<ChatResponse> response) {
+                new Thread(() -> {
+                    if (response.body() != null) {
+                        Log.d("Add contact", "Added contact: " + response.body());
+                        Contact contact = new Contact();
+                        contact.setContactName(response.body().getUser().getDisplayName());
+                        contact.setUserName(response.body().getUser().getUsername());
+                        contact.setContactPic(response.body().getUser().getProfilePic());
+                        contact.setId(response.body().getId());
+                        Log.i("Add contact", "Contact " + contact.getUserName());
+                        contactDao.insert(contact);
+                        Log.d("Add contact", "Contact " + contact.getContactName() + " inserted to contacts list");
                         contactList.postValue(contactDao.getAllContacts());
                     }
                 }).start();
             }
 
             @Override
-            public void onFailure(Call<JsonArray> call, Throwable t) {
-                Log.d("ContactAPI", "Response error: "+t);
+            public void onFailure(Call<ChatResponse> call, Throwable t) {
+                Log.d("AddContact", "Error! "+t);
             }
         });
     }
-    public void addContact(Contact contact) {
-        Call<Contact> call = webServiceAPI.addContact(LoggedUser.getUserName());
-        call.enqueue(new Callback<Contact>() {
-            @Override
-            public void onResponse(Call<Contact> call, Response<Contact> response) {
 
+    public void getContactChatContent(String id) {
+        Call<List<MessageItem>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), id);
+        call.enqueue(new Callback<List<MessageItem>>() {
+            @Override
+            public void onResponse(Call<List<MessageItem>> call, Response<List<MessageItem>> response) {
+                new Thread(() -> {
+                    if (response.body() != null) {
+                        Log.d("Chat", "Chat response: " + response.body());
+
+//                        Contact contact = new Contact();
+//                        contact.setContactName(response.body().getUser().getDisplayName());
+//                        contact.setUserName(response.body().getUser().getUsername());
+//                        contact.setContactPic(response.body().getUser().getProfilePic());
+//                        contact.setId(response.body().getId());
+//                        Log.i("Add contact", "Contact " + contact.getUserName());
+//                        contactDao.insert(contact);
+//                        Log.d("Add contact", "Contact " + contact.getContactName() + " inserted to contacts list");
+//                        contactList.postValue(contactDao.getAllContacts());
+                    }
+                }).start();
             }
 
             @Override
-            public void onFailure(Call<Contact> call, Throwable t) {
-
+            public void onFailure(Call<List<MessageItem>> call, Throwable t) {
+                Log.d("Chat", "Error! "+t);
             }
         });
     }
-    public  MutableLiveData<List<Contact>> getContactList() {
-        return contactList;
-    }
-//    public void add(final Contact contact) {
-//        // add contact to local db
-//        contactDao.insert(contact);
-//        // add contact to remote db
-//        webServiceAPI.addContact(contact);
-//    }
+
+
 //    public void update(final Contact contact) {
 //        // update contact on local db
 //        contactDao.update(contact);
@@ -116,6 +161,10 @@ public class ContactAPI {
     }
 
     public void delete(Contact contact) {
+    }
+
+    public interface ContactsCallback {
+        void onContactsRecieved();
     }
 
 }

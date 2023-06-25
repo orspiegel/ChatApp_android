@@ -1,11 +1,11 @@
 package com.example.myapplication.api;
 
 
-import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.Entites.Message;
 import com.example.myapplication.Entites.User;
+import com.example.myapplication.Objects.ChatResponse;
+import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.Objects.TokenRequest;
-import com.google.gson.JsonArray;
 
 import java.util.List;
 
@@ -27,14 +27,17 @@ public interface WebServiceAPI {
     /*
     Chats
     * */
+//    @GET("Chats")
+//    Call<JsonArray> getContactsList(@Header("Authorization") String authorization);
+
     @GET("Chats")
-    Call<JsonArray> getContactsList(@Header("Authorization") String authorization);
+    Call<List<ChatResponse>> getContactsList(@Header("Authorization") String authorization);
 
     @GET("Chats/{id}/Messages")
-    Call<List<Message>> getContactMessages(@Path("id") String id);
+    Call<List<MessageItem>> getContactMessages(@Header("Authorization") String authorization, @Path("id") String id);
 
     @POST("Chats")
-    Call<Contact> addContact(@Body String username);
+    Call<ChatResponse> addContact(@Header("Authorization") String authorization, @Body String username);
 
     @POST("Chats/{id}/Messages")
     Call<Message> addMessage(@Path("id") String id, @Body String msg);
