@@ -10,28 +10,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.ChatActivity;
+import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.R;
-import com.example.myapplication.ROOM_p.Contact;
 
 import java.util.List;
 
 public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecyclerViewAdapter.MyViewHolder> {
-    private Context context;
-    private List<Contact> contactModels;
-    private String loggedInId;
 
-    public ContactRecyclerViewAdapter(Context context, List<Contact> contactModels, String loggedInId) {
+    private Context context;
+    private List<Contact> contactList;
+
+    public ContactRecyclerViewAdapter(Context context, List<Contact> contactList) {
         this.context = context;
-        this.contactModels = contactModels;
-        this.loggedInId = loggedInId;
+        this.contactList = contactList;
+    }
+
+    public void setContactList(List<Contact> contactList) {
+        this.contactList = contactList;
     }
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.recycler_view, parent, false);
         return new MyViewHolder(view);
@@ -39,23 +43,18 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Contact contact = contactModels.get(position);
-
-        holder.tvContactName.setText(contact.getDisplayName());
-        holder.tvContactLastMsg.setText(contact.getLastMessageContent());
-        holder.tvContactLastDate.setText(contact.getLastMessageCreated());
-
+        Contact contact = contactList.get(position);
+        holder.tvContactName.setText(contact.getContactName());
+        holder.tvContactLastMsg.setText(contact.getLastMsg());
+        holder.tvContactLastDate.setText(contact.getLastMsgDate());
 
         holder.itemView.setOnClickListener(v -> {
-            Log.d("ContactRecyclerView", "contact clicked name" +contact.getDisplayName());
-
+            Log.d("ContactRecyclerView", "contact clicked name" + contact.getContactName());
             // Create an Intent to start the ChatActivity
             Intent intent = new Intent(context, ChatActivity.class);
             intent.putExtra("contactId", contact.getId());
-            intent.putExtra("contactName", contact.getDisplayName());
-            intent.putExtra("loggedInId", loggedInId);
+            intent.putExtra("contactName", contact.getContactName());
             // Add any other necessary data
-
             // Start the ChatActivity
             context.startActivity(intent);
         });
@@ -63,7 +62,7 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
     @Override
     public int getItemCount() {
-        return contactModels.size();
+        return contactList.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

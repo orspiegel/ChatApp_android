@@ -12,6 +12,8 @@
     <string name="register">Register</string>
     <string name="submit">send</string>
     <string name="message_hint">Enter message</string>
+    <string name="baseUrl">http://10.0.2.2:5000/api/</string>
+    <string name="preference_file_key" />
     <string-array name="contacts_display_names">
         <item>Or</item>
         <item>John</item>
