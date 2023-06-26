@@ -25,5 +25,6 @@ public interface UserDao {
 
     @Query("SELECT * FROM users_table WHERE displayName = :displayname AND profilePic = :profilepic")
     User getUserByUsernameAndPassword(String displayname, String profilepic);
-
+    @Query("SELECT * FROM users_table")
+    List<User> getAllUsersSync();
 }

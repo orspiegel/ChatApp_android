@@ -4,6 +4,7 @@ package com.example.myapplication.api;
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.Entites.Message;
 import com.example.myapplication.Entites.User;
+import com.example.myapplication.Entites.UserRegistration;
 import com.example.myapplication.Objects.TokenRequest;
 import com.google.gson.JsonArray;
 
@@ -13,6 +14,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -24,6 +26,7 @@ public interface WebServiceAPI {
     * */
     @POST("Tokens")
     Call<ResponseBody> getToken(@Body TokenRequest tokenRequest);
+
     /*
     Chats
     * */
@@ -54,5 +57,5 @@ public interface WebServiceAPI {
 
 
     @POST("Users")
-    Call<Void> register(@Body User user);
+    Call<Void> register(@Body UserRegistration user);
 }
