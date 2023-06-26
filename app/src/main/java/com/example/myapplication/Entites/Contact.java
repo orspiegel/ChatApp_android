@@ -10,25 +10,39 @@ import androidx.room.PrimaryKey;
 public class Contact {
     @PrimaryKey
     @NonNull
-    private String id;
+    private int id;
+    private String userName;
     private String contactName;
     private String lastMsg;
     private String lastMsgDate;
     private String contactPic;
 
-    public Contact(String id, String contactName, String lastMsg, String lastMsgDate, String contactPic) {
+    public Contact(int id, String contactName, String lastMsg, String lastMsgDate, String contactPic, String userName) {
         this.id = id;
         this.contactName = contactName;
+        this.userName = userName;
         this.lastMsg = lastMsg;
         this.lastMsgDate = lastMsgDate;
         this.contactPic = contactPic;
     }
 
-    public String getId() {
+    public Contact() {
+
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -63,7 +77,7 @@ public class Contact {
     public void setContactPic(String contactPic) {
         this.contactPic = contactPic;
     }
-    public String getid() {
+    public int getid() {
         return id;
     }
 

@@ -16,19 +16,12 @@ public class ContactViewModel extends AndroidViewModel {
         repository = new ContactRepository(application);
         allContacts = repository.getAllContacts();
     }
-    public void insert(Contact contact) {
-        repository.insert(contact);
-    }
     public void update(Contact contact) {
         repository.update(contact);
     }
     public void delete(Contact contact) {
         repository.delete(contact);
     }
-//todo: add delete all
-    //    public void deleteAllContacts() {
-//        repository.();
-//    }
     public LiveData<List<Contact>> getAllContacts () {
         return allContacts;
     }
