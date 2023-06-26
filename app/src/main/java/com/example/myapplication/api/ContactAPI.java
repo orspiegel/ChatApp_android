@@ -82,10 +82,14 @@ public class ContactAPI {
         });
     }
     public void addContact(String username) {
-        Call<ChatResponse> call = webServiceAPI.addContact("bearer " + MyApplication.getToken(), username);
+        String token = MyApplication.getToken();
+        Log.d("Add contact", "input token "+token);
+        Call<ChatResponse> call = webServiceAPI.addContact("bearer " + token, username);
+
         call.enqueue(new Callback<ChatResponse>() {
             @Override
             public void onResponse(Call<ChatResponse> call, Response<ChatResponse> response) {
+                Log.d("AddContactAPI", "Response value: " + response.body());
                 new Thread(() -> {
                     if (response.body() != null) {
                         Log.d("Add contact", "Added contact: " + response.body());

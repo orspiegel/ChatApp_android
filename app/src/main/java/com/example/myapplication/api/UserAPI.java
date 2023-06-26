@@ -1,10 +1,11 @@
 package com.example.myapplication.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
-
 import androidx.lifecycle.Observer;
+
 import com.example.myapplication.ChatListActivity;
 import com.example.myapplication.Dao.UserDao;
 import com.example.myapplication.Entites.User;
@@ -18,13 +19,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import android.content.Intent;
 public class UserAPI {
     private final Retrofit retrofit;
     private final WebServiceAPI webServiceAPI;
@@ -139,9 +140,9 @@ public class UserAPI {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                Log.d("UserApi", "Response: "+response);
+//                Log.d("UserApi", "Response: "+response);
                 User user = response.body();
-                Log.d("UserApi", "Response body: "+user);
+//                Log.d("UserApi", "Response body: "+user);
                 Log.d("UserApi", "In login");
                 LoggedUser.setLoggedIn(user.getDisplayName(), user.getProfilePic());
                 callback.onLoginSuccess(MyApplication.context, ChatListActivity.class);
