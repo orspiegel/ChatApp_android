@@ -3,23 +3,28 @@ package com.example.myapplication.api;
 import android.content.Context;
 import android.util.Log;
 
+
+import androidx.lifecycle.Observer;
 import com.example.myapplication.ChatListActivity;
 import com.example.myapplication.Dao.UserDao;
 import com.example.myapplication.Entites.User;
+import com.example.myapplication.Entites.UserRegistration;
 import com.example.myapplication.MyApplication;
 import com.example.myapplication.Objects.TokenRequest;
 import com.example.myapplication.R;
 import com.example.myapplication.State.LoggedUser;
 
 import java.io.IOException;
-
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
+import android.content.Intent;
 public class UserAPI {
     private final Retrofit retrofit;
     private final WebServiceAPI webServiceAPI;
@@ -35,40 +40,70 @@ public class UserAPI {
     }
 
     public void addUser(User user) {
-        Call<Void> call = webServiceAPI.register(user);
+        UserRegistration userRegistration = new UserRegistration(
+                user.getUserName(),
+                user.getPassword(),
+                user.getDisplayName(),
+                user.getProfilePic()
+        );
+        Call<Void> call = webServiceAPI.register(userRegistration);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("UserAPI", "User added successfully.");
+                } else {
+                    Log.d("UserAPI", "Failed to add user. Response: " + response.toString());
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-
+                Log.d("UserAPI", "Error: " + t.getMessage());
             }
         });
     }
 
-//    public void login(String username, String password, String token, LoginCallback callback) {
-//        Call<User> call = webServiceAPI.getUserInfo("bearer " + token, username);
-//        Log.d("login function", "input token: " + token + " username: " + username);
-//        call.enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                Log.d("UserApi", "Response: " + response);
-//                User user = response.body();
-//                Log.d("UserApi", "Response body: " + user);
-//                Log.d("UserApi", "In login");
-//                LoggedUser.setLoggedIn(user.getDisplayName(), user.getProfilePic());
-//                callback.onLoginSuccess();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                Log.d("UserApi", "Error: " + t);
-//                callback.onLoginFailure();
-//            }
-//        });
-//    }
+
+    public void logAllUsers() {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                userDao.getAllUsers().observeForever(new Observer<List<User>>() {
+                    @Override
+                    public void onChanged(List<User> users) {
+                        for (User user : users) {
+                            Log.d("UserDB", "User: " + user.toString());
+                        }
+                        userDao.getAllUsers().removeObserver(this);
+                    }
+                });
+            }
+        });
+    }
+    public void login(String username, String password, String token) {
+        Call<User> call = webServiceAPI.getUserInfo("bearer " + token, username);
+        Log.d("login function", "input token: "+token+" username: "+username);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                Log.d("UserApi", "Response: "+response);
+                User user = response.body();
+                Log.d("UserApi", "Response body: "+user);
+                Log.d("UserApi", "In login");
+                LoggedUser.setLoggedIn(user.getDisplayName(), user.getProfilePic());
+                Intent intent = new Intent(MyApplication.context, ChatListActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                MyApplication.context.startActivity(intent);
+            }
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Log.d("UserApi", "Error: "+t);
+            }
+        });
+    }
+
 
     public void getToken(String username, String password, TokenCallback callback) {
         TokenRequest tokenRequest = new TokenRequest(username, password);
