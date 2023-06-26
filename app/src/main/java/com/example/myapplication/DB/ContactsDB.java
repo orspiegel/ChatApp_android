@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.myapplication.Dao.ContactDao;
 import com.example.myapplication.Entites.Contact;
 
-@Database(entities = {Contact.class}, version = 1)
+@Database(entities = {Contact.class}, version = 3)
 public abstract class ContactsDB extends RoomDatabase {
     private static ContactsDB instance;
     public abstract ContactDao contactDao();

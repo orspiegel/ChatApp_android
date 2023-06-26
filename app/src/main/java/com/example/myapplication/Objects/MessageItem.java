@@ -1,5 +1,7 @@
 package com.example.myapplication.Objects;
 
+import java.util.List;
+
 public class MessageItem {
     int msgID;
     String created;
@@ -12,7 +14,12 @@ public class MessageItem {
         this.sender = sender;
         this.content = content;
     }
-
+    public MessageItem(int msgID, String created, List<String> sender, String content) {
+        this.msgID = msgID;
+        this.created = created;
+        this.sender = sender.get(0);
+        this.content = content;
+    }
     public int getMsgID() {
         return msgID;
     }
