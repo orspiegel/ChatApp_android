@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.R;
+import com.example.myapplication.Utils.Utils;
 
 import java.util.List;
 
@@ -54,6 +55,8 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
         holder.tvContactName.setText(contact.getContactName());
         holder.tvContactLastMsg.setText(contact.getLastMsg());
         holder.tvContactLastDate.setText(contact.getLastMsgDate());
+        holder.imageView.setImageBitmap(Utils.StringToBitMap(contact.getContactPic()));
+
 
         holder.itemView.setOnClickListener(v -> {
             if (onContactClickListener != null) {

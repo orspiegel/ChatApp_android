@@ -142,7 +142,9 @@ public class UserAPI {
             public void onResponse(Call<User> call, Response<User> response) {
 //                Log.d("UserApi", "Response: "+response);
                 User user = response.body();
-//                Log.d("UserApi", "Response body: "+user);
+                Log.d("UserApi", "Response body: "+user.getDisplayName());
+//                Log.d("UserApi", "Response body: "+user.getProfilePic());
+
                 Log.d("UserApi", "In login");
                 LoggedUser.setLoggedIn(user.getDisplayName(), user.getProfilePic());
                 callback.onLoginSuccess(MyApplication.context, ChatListActivity.class);
