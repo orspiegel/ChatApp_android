@@ -106,20 +106,20 @@ public class ChatListActivity extends AppCompatActivity implements ContactAPI.Co
         });
 
     }
-    private void replaceOldListWithNewList() {
-        // clear old list
-        data.clear();
-
-        // add new list
-        ArrayList<String> newList = new ArrayList<>();
-        newList.add("Lion");
-        newList.add("Wolf");
-        newList.add("Bear");
-        data.addAll(newList);
-
-        // notify adapter
-        adapter.notifyDataSetChanged();
-    }
+//    private void replaceOldListWithNewList() {
+//        // clear old list
+//        data.clear();
+//
+//        // add new list
+//        ArrayList<String> newList = new ArrayList<>();
+//        newList.add("Lion");
+//        newList.add("Wolf");
+//        newList.add("Bear");
+//        data.addAll(newList);
+//
+//        // notify adapter
+//        adapter.notifyDataSetChanged();
+//    }
 
     public void onContactsRecieved() {
         contacts = contactDao.getAllContacts();

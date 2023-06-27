@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FF000000</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="color_stroke">#000000</color>
+
+    <color name="background">#D4D0E2</color>
+    <color name="curr_user_message">#87B9E0</color>
+    <color name="other_user_message">#000000</color>
+    <color name="message_text">#000000</color>
+    <color name="footer_icons">#75838F</color>
+    <color name="buttons">#6D8FA8</color>
+</resources>
