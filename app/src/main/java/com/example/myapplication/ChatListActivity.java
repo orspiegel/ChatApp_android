@@ -22,6 +22,7 @@ import com.example.myapplication.Utils.Utils;
 import com.example.myapplication.api.ContactAPI;
 import com.example.myapplication.recyclerview.ContactRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListActivity extends AppCompatActivity implements ContactAPI.ContactsCallback {
@@ -105,6 +106,20 @@ public class ChatListActivity extends AppCompatActivity implements ContactAPI.Co
         });
 
     }
+    private void replaceOldListWithNewList() {
+        // clear old list
+        data.clear();
+
+        // add new list
+        ArrayList<String> newList = new ArrayList<>();
+        newList.add("Lion");
+        newList.add("Wolf");
+        newList.add("Bear");
+        data.addAll(newList);
+
+        // notify adapter
+        adapter.notifyDataSetChanged();
+    }
 
     public void onContactsRecieved() {
         contacts = contactDao.getAllContacts();
@@ -113,6 +128,8 @@ public class ChatListActivity extends AppCompatActivity implements ContactAPI.Co
 
         runOnUiThread(()-> {
             adapter.setContactList(contacts);
+            adapter.notifyDataSetChanged(); // Notify the adapter that the data has changed
         });
     }
+
 }

@@ -1,6 +1,5 @@
 package com.example.myapplication.Entites;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 /*
@@ -8,22 +7,23 @@ import androidx.room.PrimaryKey;
 */
 @Entity(tableName = "contacts_table")
 public class Contact {
-    @PrimaryKey
-    @NonNull
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private String userName;
     private String contactName;
     private String lastMsg;
     private String lastMsgDate;
     private String contactPic;
+    private String autoID;
 
-    public Contact(int id, String contactName, String lastMsg, String lastMsgDate, String contactPic, String userName) {
+    public Contact(int id, String contactName, String lastMsg, String lastMsgDate, String contactPic, String userName, String autoID) {
         this.id = id;
         this.contactName = contactName;
         this.userName = userName;
         this.lastMsg = lastMsg;
         this.lastMsgDate = lastMsgDate;
         this.contactPic = contactPic;
+        this.autoID = autoID;
     }
 
     public Contact() {
@@ -81,4 +81,11 @@ public class Contact {
         return id;
     }
 
+    public String getAutoID() {
+        return autoID;
+    }
+
+    public void setAutoID(String autoID) {
+        this.autoID = autoID;
+    }
 }
