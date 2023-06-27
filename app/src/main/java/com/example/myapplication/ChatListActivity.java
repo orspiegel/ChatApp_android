@@ -38,7 +38,12 @@ public class ChatListActivity extends AppCompatActivity implements ContactAPI.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
         contactList = new MutableLiveData<>();
-
+        ImageView settingsBtn = findViewById(R.id.settingsBtn);
+        settingsBtn.setOnClickListener(v -> {
+            Log.d("Test", "settingsBtn clicked");
+            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            startActivity(intent);
+        });
         contactDB = ContactsDB.getInstance(this);
         contactDao = contactDB.contactDao();
         contactAPI = new ContactAPI(contactDao, contactList);
