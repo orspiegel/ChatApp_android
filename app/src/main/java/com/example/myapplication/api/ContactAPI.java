@@ -11,10 +11,12 @@ import com.example.myapplication.Objects.AddContactRequest;
 import com.example.myapplication.Objects.ChatResponse;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.R;
+import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,18 +25,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ContactAPI {
     private Retrofit retrofit;
-    // remote
     private WebServiceAPI webServiceAPI;
-    // local
     private ContactDao contactDao;
-    // local
     private MutableLiveData<List<Contact>> contactList;
 
     public ContactAPI(ContactDao contactDao,MutableLiveData<List<Contact>> contactList){
         String url = MyApplication.context.getString(R.string.baseUrl);
-        retrofit = (new Retrofit.Builder().baseUrl(url))
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(BaseUrlInterceptor.getInstance())
+                .build();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
         webServiceAPI = retrofit.create(WebServiceAPI.class);
         this.contactDao = contactDao;
         this.contactList = contactList;

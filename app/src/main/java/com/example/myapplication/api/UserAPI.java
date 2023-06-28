@@ -14,12 +14,14 @@ import com.example.myapplication.MyApplication;
 import com.example.myapplication.Objects.TokenRequest;
 import com.example.myapplication.R;
 import com.example.myapplication.State.LoggedUser;
+import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,9 +35,17 @@ public class UserAPI {
 
     public UserAPI(UserDao userDao) {
         String url = MyApplication.context.getString(R.string.baseUrl);
-        retrofit = (new Retrofit.Builder().baseUrl(url))
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(BaseUrlInterceptor.getInstance())
+                .build();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+
         webServiceAPI = retrofit.create(WebServiceAPI.class);
         this.userDao = userDao;
     }
