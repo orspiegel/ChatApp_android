@@ -15,33 +15,28 @@ import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
     private List<Message> messageList = new ArrayList<>();
-    private String loggedInUserId;
+    private String contactDisplayName;
     private String contactId;
-    private String token;
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
+    private String contactProfilePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
         recyclerView = findViewById(R.id.rvMessageRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            loggedInUserId = extras.getString("loggedInUserId");
-            contactId = extras.getString("contactId");
+            contactId = extras.getString("id");
+            contactDisplayName = extras.getString("displayName");
+            contactProfilePic = extras.getString("profilePic");
             Log.d("ChatActivity", "Chat "+contactId);
-
-            token = MyApplication.getToken();
         }
-
         messageAdapter = new MessageAdapter(messageList);
         recyclerView.setAdapter(messageAdapter);
         loadChatMessages();
-
         ImageView backBtn = findViewById(R.id.backToContactsBtn);
         backBtn.setOnClickListener(v -> {
             finish();

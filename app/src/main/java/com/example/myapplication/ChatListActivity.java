@@ -65,14 +65,6 @@ public class ChatListActivity extends AppCompatActivity {
             alertDialog.show();
         });
 
-        // OnClick action - enter user chat
-        adapter.setOnContactClickListener(contact -> {
-            Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
-            intent.putExtra("contactId", contact.getId());
-            intent.putExtra("contactName", contact.getContactName());
-            startActivity(intent);
-        });
-
         // Get contact list
         contactViewModel.getAllContacts().observe(this, newContactsList -> {
             contacts = newContactsList;

@@ -44,13 +44,7 @@ public class ContactRepository {
         @Override
         protected void onActive() {
             super.onActive();
-            //change the db to the one containing the info from the server
-//            contactsDB = ContactsDB.getInstance(MyApplication.context);
-//            contactDao = contactsDB.contactDao();
-//            // update the mutable live data
-//            allContacts.postValue(contactDao.getAllContacts());
             new Thread(() -> {
-                // not local database
                 allContacts.postValue(contactDao.getAllContacts());
                 contactAPI.getAllContacts();
             }).start();
@@ -60,12 +54,7 @@ public class ContactRepository {
     public LiveData<List<Contact>> getAll() {
         return allContacts;
     }
-//    public void add(final Contact contact) {
-//        // add contact to local db
-//        contactDao.insert(contact);
-//        // add contact to remote db
-//        contactAPI.addContact(contact);
-//    }
+
     public void update(final Contact contact) {
         // update contact on local db
         contactDao.update(contact);

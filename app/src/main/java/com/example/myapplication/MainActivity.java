@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -19,7 +20,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 
 import com.example.myapplication.DB.UsersDB;
 import com.example.myapplication.Dao.UserDao;
@@ -29,10 +29,6 @@ import com.example.myapplication.api.UserAPI;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import android.os.Handler;
-import android.os.Looper;
 public class MainActivity extends AppCompatActivity {
     private ImageView avatar;
     private EditText username;
@@ -67,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button loginButton = findViewById(R.id.log_in_button);
+
         UsersDB database = UsersDB.getInstance(this);
         userDao = database.userDao();
 

@@ -1,6 +1,7 @@
 package com.example.myapplication.recyclerview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.ChatActivity;
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.R;
 import com.example.myapplication.Utils.Utils;
@@ -57,11 +59,14 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
         holder.tvContactLastDate.setText(contact.getLastMsgDate());
         holder.imageView.setImageBitmap(Utils.StringToBitMap(contact.getContactPic()));
 
-
         holder.itemView.setOnClickListener(v -> {
-            if (onContactClickListener != null) {
-                onContactClickListener.onContactClick(contact);
-            }
+            Intent clickedContact = new Intent(v.getContext(), ChatActivity.class);
+            clickedContact.putExtra("id", contact.getAutoID());
+            clickedContact.putExtra("displayName", contact.getContactName());
+            clickedContact.putExtra("profilePic", contact.getContactPic());
+
+            v.getContext().startActivity(clickedContact);
+
         });
     }
 
