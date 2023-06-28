@@ -8,13 +8,17 @@ import com.example.myapplication.Dao.ContactDao;
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.MyApplication;
 import com.example.myapplication.Objects.AddContactRequest;
+import com.example.myapplication.Objects.AddContactResponse;
 import com.example.myapplication.Objects.ChatResponse;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.R;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,14 +36,23 @@ public class ContactAPI {
 
     public ContactAPI(ContactDao contactDao,MutableLiveData<List<Contact>> contactList){
         String url = MyApplication.context.getString(R.string.baseUrl);
-        retrofit = (new Retrofit.Builder().baseUrl(url))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(100, TimeUnit.SECONDS)
+                .readTimeout(100,TimeUnit.SECONDS).build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url).client(client)
+                .addConverterFactory(GsonConverterFactory.create(new Gson())).build();
+
+//        retrofit = (new Retrofit.Builder().baseUrl(url))
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
         webServiceAPI = retrofit.create(WebServiceAPI.class);
         this.contactDao = contactDao;
         this.contactList = contactList;
     }
-    public void getAllContacts(String token, ContactsCallback callback){
+    public void getAllContacts(){
+        String token = MyApplication.getToken();
         Call<List<ChatResponse>> call = webServiceAPI.getContactsList("bearer " + token);
         Log.d("ContactAPI", "In contactAPI get all contacts, token: "+token);
         call.enqueue(new Callback<List<ChatResponse>>() {
@@ -58,7 +71,6 @@ public class ContactAPI {
                             contact.setUserName(c.getUser().getUsername());
                             contact.setContactPic(c.getUser().getProfilePic());
                             contact.setAutoID(c.getId());
-//
                             if (c.getLastMessage() != null) {
                                 contact.setLastMsg(c.getLastMessage().getContent());
                                 contact.setLastMsgDate(c.getLastMessage().getCreated());
@@ -71,8 +83,7 @@ public class ContactAPI {
                             contactDao.insert(c);
                             Log.d("ContactAPI", "Contact " + c.getContactName() + " inserted to contacts list");
                         }
-                        callback.onContactsRecieved();
-//
+//                        callback.onContactsRecieved();
                         contactList.postValue(contactDao.getAllContacts());
 
                     }
@@ -81,6 +92,7 @@ public class ContactAPI {
             @Override
             public void onFailure(Call<List<ChatResponse>> call, Throwable t) {
                 Log.d("ContactAPI", "Response error: "+t);
+//                contactList.postValue(contactDao.getAllContacts());
             }
         });
     }
@@ -89,28 +101,28 @@ public class ContactAPI {
         Log.d("Add contact", "input token "+token);
         AddContactRequest request = new AddContactRequest(username);
         Log.d("Contact api add","body " +request );
-        Call<Void> call = webServiceAPI.addContact("bearer " + token, request);
-        call.enqueue(new Callback<Void>() {
+        Call<AddContactResponse> call = webServiceAPI.addContact("bearer " + token, request);
+        call.enqueue(new Callback<AddContactResponse>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                new Thread(() -> {
-                    if (response.isSuccessful()) {
-                        Log.d("Add contact", "Added contact: " + response.body());
-                        getAllContacts(token, new ContactsCallback() {
-                            @Override
-                            public void onContactsRecieved() {
-                                // Handle the callback
-                            }
-                        });
-                        if (ContactAPI.this instanceof ContactsCallback) {
-                            ((ContactsCallback) ContactAPI.this).onContactsRecieved(); // Update the contact list in the activity
-                        }
-                    }
-                }).start();
+            public void onResponse(Call<AddContactResponse> call, Response<AddContactResponse> response) {
+                Log.d("onResponse add contact","response"+response);
+                if (response.body() != null) {
+                    Log.d("Add contact", "Added contact: " + response.body());
+                    Log.d("Add contact", "Added contact: " + response.body().getId());
+                    Log.d("Add contact", "Added contact: " + response.body().getContactResponse().getDisplayName());
+                    Log.d("Add contact", "Added contact: " + response.body().getContactResponse().getUsername());
+                    Contact contact = new Contact(response.body());
+                    new Thread(()->{
+                        contactDao.insert(contact);
+                    }).start();
+                    List<Contact> newContactList = contactList.getValue();
+                    newContactList.add(contact);
+                    contactList.postValue(newContactList);
+                }
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<AddContactResponse> call, Throwable t) {
                 Log.d("AddContact", "Error! " + t);
             }
         });

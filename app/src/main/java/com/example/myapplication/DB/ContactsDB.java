@@ -18,7 +18,7 @@ public abstract class ContactsDB extends RoomDatabase {
     public abstract ContactDao contactDao();
     public static synchronized ContactsDB getInstance(Context context) {
         if (instance == null) {
-            instance = Room.databaseBuilder(context.getApplicationContext(),
+            instance = Room.databaseBuilder(context,
                             ContactsDB.class, "contacts_database").fallbackToDestructiveMigration()
                     .addCallback(roomCallback).build();
         }

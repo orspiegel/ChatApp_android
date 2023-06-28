@@ -2,11 +2,11 @@ package com.example.myapplication.Objects;
 
 public class AddContactResponse {
     String id;
-    ContactResponse contactResponse;
+    ContactResponse user;
 
     public AddContactResponse(String id, ContactResponse contactResponse) {
         this.id = id;
-        this.contactResponse = contactResponse;
+        this.user = contactResponse;
     }
 
     public String getId() {
@@ -18,10 +18,10 @@ public class AddContactResponse {
     }
 
     public ContactResponse getContactResponse() {
-        return contactResponse;
+        return user;
     }
 
     public void setContactResponse(ContactResponse contactResponse) {
-        this.contactResponse = contactResponse;
+        this.user = contactResponse;
     }
 }

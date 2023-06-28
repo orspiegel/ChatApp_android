@@ -2,6 +2,9 @@ package com.example.myapplication.Entites;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.myapplication.Objects.AddContactResponse;
+
 /*
     Usage: GET baseURL/api/Chats/chatWithID/Messages
 */
@@ -28,6 +31,14 @@ public class Contact {
 
     public Contact() {
 
+    }
+    public Contact(AddContactResponse newCont) {
+        this.autoID = newCont.getId();
+        this.contactName = newCont.getContactResponse().getDisplayName();
+        this.userName = newCont.getContactResponse().getUsername();
+        this.contactPic = newCont.getContactResponse().getProfilePic();
+        this.lastMsg = null;
+        this.lastMsgDate = null;
     }
 
     public String getUserName() {
