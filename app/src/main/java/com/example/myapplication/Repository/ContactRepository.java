@@ -21,12 +21,6 @@ public class ContactRepository {
 
 
     public ContactRepository(/*Application application*/Context context)  {
-        /*
-        * contactList = new MutableLiveData<>();
-
-        contactDB = ContactsDB.getInstance(this);
-        contactDao = contactDB.contactDao();
-        contactAPI = new ContactAPI(contactDao, contactList);*/
         contactsDB = ContactsDB.getInstance(context);
         contactDao = contactsDB.contactDao();
         allContacts = new ContactListData();

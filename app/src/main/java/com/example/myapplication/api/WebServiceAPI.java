@@ -40,9 +40,6 @@ public interface WebServiceAPI {
     @GET("Chats/{id}/Messages")
     Call<List<MessageResponse>> getContactMessages(@Header("Authorization") String authorization, @Path("id") String id);
 
-//    @POST("Chats")
-//    Call<AddContactResponse> addContact(@Header("Authorization") String authorization, @Body AddContactRequest addContactRequest);
-
     @POST("Chats")
     Call<AddContactResponse> addContact(@Header("Authorization") String authorization, @Body AddContactRequest addContactRequest);
     @POST("Chats/{id}/Messages")
