@@ -98,8 +98,7 @@ public class ChatAPI {
                 new Thread(() -> {
                     Log.d("Chat", "RESPONDED");
 
-                    String chatID = "..."; // Replace this with the correct chatID
-                    String msgContent = "..."; // Replace this with the actual message content
+
                     Message newMessage = new Message(chatID, msgContent, LoggedUser.getUserName());
                     long newMsgID = messageDao.insert(newMessage);
 
