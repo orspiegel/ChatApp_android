@@ -61,7 +61,7 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
         holder.itemView.setOnClickListener(v -> {
             Intent clickedContact = new Intent(v.getContext(), ChatActivity.class);
-            clickedContact.putExtra("id", contact.getAutoID());
+            clickedContact.putExtra("serverChatID", contact.getAutoID());
             clickedContact.putExtra("displayName", contact.getContactName());
             clickedContact.putExtra("profilePic", contact.getContactPic());
 
