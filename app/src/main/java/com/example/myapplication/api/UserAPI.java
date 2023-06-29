@@ -103,7 +103,7 @@ public class UserAPI {
                 User user = response.body();
                 Log.d("UserApi", "Response body: "+user);
                 Log.d("UserApi", "In login");
-                LoggedUser.setLoggedIn(user.getDisplayName(), user.getProfilePic());
+                LoggedUser.setLoggedIn(user.getUserName(), user.getDisplayName(), user.getProfilePic());
                 Intent intent = new Intent(MyApplication.context, ChatListActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 MyApplication.context.startActivity(intent);
@@ -156,7 +156,7 @@ public class UserAPI {
 //                Log.d("UserApi", "Response body: "+user.getProfilePic());
 
                 Log.d("UserApi", "In login");
-                LoggedUser.setLoggedIn(user.getDisplayName(), user.getProfilePic());
+                LoggedUser.setLoggedIn(user.getUserName(),user.getDisplayName(), user.getProfilePic());
                 callback.onLoginSuccess(MyApplication.context, ChatListActivity.class);
             }
             @Override

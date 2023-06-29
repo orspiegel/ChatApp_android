@@ -8,8 +8,8 @@ public class LoggedUser {
     static String profilePic;
     static Contact currentContact;
 
-    public static void setLoggedIn(String displayName, String profilePic) {
-//        LoggedUser.userName = userName;
+    public static void setLoggedIn(String userName, String displayName, String profilePic) {
+        LoggedUser.userName = userName;
         LoggedUser.displayName = displayName;
         LoggedUser.profilePic = profilePic;
     }

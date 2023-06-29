@@ -30,7 +30,6 @@ import java.util.List;
 public class ChatActivity extends AppCompatActivity {
 
     private MutableLiveData<List<MessageItem>> messageList;
-    private String loggedInUserId;
     private String chatID;
     private String token;
     private RecyclerView recyclerView;
@@ -71,22 +70,22 @@ public class ChatActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            loggedInUserId = extras.getString("loggedInUserId");
+            //loggedInUserId = extras.getString("loggedInUserId");
 //            contactId = extras.getInt("contactId"); // convert the contactId to String here
             chatID = extras.getString("serverChatID");
             currentChat = new Chat(chatID);
             new Thread(() -> {
                 chatsDao.insert(currentChat);
             }).start();
-            contactName.setText(extras.getString("contactName"));
-            contactPic.setImageBitmap(Utils.StringToBitMap(extras.getString("contactPic")));
+            contactName.setText(extras.getString("displayName"));
+            contactPic.setImageBitmap(Utils.StringToBitMap(extras.getString("profilePic")));
 
             token = MyApplication.getToken();
         }
 
         messageAdapter = new MessageRecyclerViewAdapter(this);
         recyclerView.setAdapter(messageAdapter);
-//        loadChatMessages();
+       loadChatMessages();
 
         EditText messageInput = findViewById(R.id.message);
         ImageView sendButton = findViewById(R.id.button_gchat_send);
@@ -121,7 +120,7 @@ public class ChatActivity extends AppCompatActivity {
                 new Thread(() -> {
                     chatAPI.addMessage(chatID, messageInput.getText().toString());
                 }).start();
-                messageInput.getText().clear();
+                messageInput.setText("");
             }
         });
 

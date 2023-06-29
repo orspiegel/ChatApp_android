@@ -110,6 +110,10 @@ public class ChatAPI {
                         System.out.println("Failed to save message");
                     }
 
+                    for (Message msg : messageDao.getAllMessages()) {
+                        Log.d("Current Messages: ", msg.getSenderUserName() + msg.getContent() + msg.getTimeStamp());
+                    }
+
                 }).start();
             }
 
