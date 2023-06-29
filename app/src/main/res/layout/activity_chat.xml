@@ -34,7 +34,7 @@
                             tools:ignore="LabelFor" />
 
                         <ImageView
-                            android:id="@+id/settingsBtn"
+                            android:id="@+id/settingsBtn1"
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:padding="15dp"

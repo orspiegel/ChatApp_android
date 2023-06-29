@@ -32,6 +32,16 @@ public class ChatListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
         contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
+        ImageView settingsBtn = findViewById(R.id.settingsBtn);
+        settingsBtn.setOnClickListener(v -> {
+            Log.d("Test", "settingsBtn clicked");
+            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            startActivity(intent);
+        });
+        contactDB = ContactsDB.getInstance(this);
+        contactDao = contactDB.contactDao();
+        contactAPI = new ContactAPI(contactDao, contactList);
+
         ImageView imgView = findViewById(R.id.SpeakerImg);
         TextView nameView = findViewById(R.id.speakerName);
         nameView.setText(LoggedUser.getDisplayName());

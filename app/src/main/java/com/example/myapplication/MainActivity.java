@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.DB.UsersDB;
 import com.example.myapplication.Dao.UserDao;
 import com.example.myapplication.Entites.User;
+import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 import com.example.myapplication.api.UserAPI;
 
 import java.io.ByteArrayOutputStream;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Button loginButton = findViewById(R.id.log_in_button);
 
         UsersDB database = UsersDB.getInstance(this);

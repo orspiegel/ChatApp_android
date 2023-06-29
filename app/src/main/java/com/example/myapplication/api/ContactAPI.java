@@ -13,6 +13,7 @@ import com.example.myapplication.Objects.ChatResponse;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.R;
 import com.google.gson.Gson;
+import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,26 +28,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ContactAPI {
     private Retrofit retrofit;
-    // remote
     private WebServiceAPI webServiceAPI;
-    // local
     private ContactDao contactDao;
-    // local
     private MutableLiveData<List<Contact>> contactList;
 
     public ContactAPI(ContactDao contactDao,MutableLiveData<List<Contact>> contactList){
         String url = MyApplication.context.getString(R.string.baseUrl);
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .connectTimeout(100, TimeUnit.SECONDS)
-                .readTimeout(100,TimeUnit.SECONDS).build();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(url).client(client)
-                .addConverterFactory(GsonConverterFactory.create(new Gson())).build();
+                .addInterceptor(BaseUrlInterceptor.getInstance())
+                .build();
 
-//        retrofit = (new Retrofit.Builder().baseUrl(url))
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
         webServiceAPI = retrofit.create(WebServiceAPI.class);
         this.contactDao = contactDao;
         this.contactList = contactList;
