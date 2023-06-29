@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.DB.UsersDB;
 import com.example.myapplication.Dao.UserDao;
-import com.example.myapplication.ViewModels.BaseUrlInterceptor;
+//import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 import com.example.myapplication.api.UserAPI;
 
 
@@ -26,7 +26,7 @@ public class LoginActivity extends AppCompatActivity implements UserAPI.TokenCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        BaseUrlInterceptor.getInstance().setBaseUrl("http://10.0.2.2:5000/api/");
+        //BaseUrlInterceptor.getInstance().setBaseUrl("http://10.0.2.2:5000/api/");
 
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);

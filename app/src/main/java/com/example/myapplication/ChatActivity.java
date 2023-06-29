@@ -1,27 +1,54 @@
 package com.example.myapplication;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.recyclerview.Message;
+import com.example.myapplication.DB.ChatDB;
+import com.example.myapplication.DB.MessageDB;
+import com.example.myapplication.Dao.ChatsDao;
+import com.example.myapplication.Dao.MessageDao;
+import com.example.myapplication.Entites.Chat;
+import com.example.myapplication.Objects.MessageItem;
+import com.example.myapplication.Utils.Utils;
+import com.example.myapplication.api.ChatAPI;
+import com.example.myapplication.recyclerview.MessageRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
-    private List<Message> messageList = new ArrayList<>();
+
+    private MutableLiveData<List<MessageItem>> messageList;
     private String loggedInUserId;
-    private String contactId;
+    private String chatID;
     private String token;
     private RecyclerView recyclerView;
-    private MessageAdapter messageAdapter;
+    private MessageRecyclerViewAdapter messageAdapter;
+
+    private MessageDB messageDB;
+
+    private MessageDao messageDao;
+
+    private ChatsDao chatsDao;
+    private ChatDB chatDB;
+
+    private ChatAPI chatAPI;
+
+    private int contactId;
+
+    private Chat currentChat;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,18 +58,72 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.rvMessageRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        TextView contactName = findViewById(R.id.currentContactName);
+        ImageView contactPic = findViewById(R.id.currentContactImg);
+
+        chatDB = ChatDB.getInstance(this);
+        chatsDao = chatDB.chatDao();
+
+        messageDB = MessageDB.getInstance(this);
+        messageDao = messageDB.messageDao();
+
+        chatAPI = new ChatAPI(chatsDao, messageList, messageDao);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             loggedInUserId = extras.getString("loggedInUserId");
-            contactId = extras.getString("contactId");
-            Log.d("ChatActivity", "Chat "+contactId);
+            contactId = extras.getInt("contactId");
+            //Log.d("ChatActivity", "Chat "+contactId);
+            chatID = extras.getString("serverChatID");
+            currentChat = new Chat(chatID);
+            new Thread(() -> {
+                chatsDao.insert(currentChat);
+            }).start();
+            contactName.setText(extras.getString("contactName"));
+            contactPic.setImageBitmap(Utils.StringToBitMap(extras.getString("contactPic")));
 
             token = MyApplication.getToken();
         }
 
-        messageAdapter = new MessageAdapter(messageList);
+        messageAdapter = new MessageRecyclerViewAdapter(this);
         recyclerView.setAdapter(messageAdapter);
         loadChatMessages();
+
+        EditText messageInput = findViewById(R.id.message);
+        ImageView sendButton = findViewById(R.id.button_gchat_send);
+
+        messageInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                boolean btnTrigger = (!(messageInput.getText().toString().trim().isEmpty()));
+                sendButton.setEnabled(btnTrigger);
+                if (btnTrigger) {
+                    sendButton.setVisibility(View.VISIBLE);
+                } else {
+                    sendButton.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        sendButton.setOnClickListener(v -> {
+            //sendMessage(messageInput.getText().toString());
+            if (!messageInput.getText().toString().isEmpty()) {
+                new Thread(() -> {
+                    chatAPI.addMessage(chatID, messageInput.getText().toString());
+                }).start();
+                messageInput.getText().clear();
+            }
+        });
 
         ImageView backBtn = findViewById(R.id.backToContactsBtn);
         backBtn.setOnClickListener(v -> {
@@ -53,48 +134,23 @@ public class ChatActivity extends AppCompatActivity {
 
     private void loadChatMessages() {
         Log.d("ChatActivity", "Loading messages...");
-        Thread thread = new Thread() {
-//            public void run() {
-//                try {
-//                    String urlStr = "http://10.0.2.2:5000/api/Chats/" + contactId + "/Messages";
-//                    Log.d("ChatActivity", "contact id: " + contactId);
-//
-//                    URL url = new URL(urlStr);
-//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                    conn.setRequestMethod("GET");
-//                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-//                    conn.setRequestProperty("Authorization", "bearer " + token);
-//
-//                    if (conn.getResponseCode() == 200) {
-//                        InputStream in = conn.getInputStream();
-//                        String response = Utils.readStream(in);
-//                        Log.d("ChatActivity", "response: " + response);
-//
-//                        JSONArray jsonArray = new JSONArray(response);
-//                        for (int i = 0; i < jsonArray.length(); i++) {
-//                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                            String id = jsonObject.getString("id");
-//                            String content = jsonObject.getString("content");
-//                            String created = jsonObject.getString("created");
-//                            boolean isSentByMe = loggedInUserId.equals(jsonObject.getString("senderId"));
-//
-//                            Message message = new Message(id, content, created, isSentByMe);
-//                            messageList.add(message);
-//                        }
-//
-//                        runOnUiThread(() -> {
-//                            messageAdapter.notifyDataSetChanged();
-//                        });
-//                    } else {
-//                        Log.d("ChatActivity", "Error: " + conn.getResponseCode() + " " + conn.getResponseMessage());
-//                    }
-//
-////                    conn.disconnect();
-//                } catch (IOException | JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-        };
-        thread.start();
+
+        new Thread(() -> {
+            chatAPI.getChatContent(chatID);
+        }).start();
+    }
+
+    public void onMessageUpdate() {
+
+        //List<MessageItem> messages = chatsDao.getAllMessages(chatID);
+        //List<MessageItem> messageList = chatsDao.getAllMessages(chatID);
+        //Log.d("ChatListActivity", "contacts on DB:"+messageList);
+        //Log.d("ChatListActivity", "contacts size on DB:"+messageList.size());
+
+
+        runOnUiThread(()-> {
+            //messageAdapter.setMessageList(messageList);
+            //messageAdapter.notifyDataSetChanged(); // Notify the adapter that the data has changed
+        });
     }
 }

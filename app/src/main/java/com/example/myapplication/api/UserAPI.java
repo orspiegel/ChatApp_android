@@ -14,7 +14,7 @@ import com.example.myapplication.MyApplication;
 import com.example.myapplication.Objects.TokenRequest;
 import com.example.myapplication.R;
 import com.example.myapplication.State.LoggedUser;
-import com.example.myapplication.ViewModels.BaseUrlInterceptor;
+//import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,8 +36,11 @@ public class UserAPI {
     public UserAPI(UserDao userDao) {
         String url = MyApplication.context.getString(R.string.baseUrl);
 
-        OkHttpClient client = new OkHttpClient.Builder()
+        /*OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(BaseUrlInterceptor.getInstance())
+                .build();*/
+
+        OkHttpClient client = new OkHttpClient.Builder()
                 .build();
 
         retrofit = new Retrofit.Builder()

@@ -1,61 +1,67 @@
 package com.example.myapplication.Entites;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "messages_table")
 public class Message {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-    private String created;
-    private String senderUsername;
-    private String msg;
-    private String contactId;
 
-    public Message(int id, String msg, String senderUsername, String contactId, String created) {
-        this.id = id;
-        this.created = created;
-        this.senderUsername = senderUsername;
-        this.msg = msg;
-        this.contactId = contactId;
+    @NonNull@PrimaryKey(autoGenerate = false)
+    private String msgID;
+
+    @ColumnInfo(name = "chat_id")
+    private String chat_id;
+    private String timeStamp;
+    private String content;
+    private String senderID;
+
+    public Message(String msgID, String chat_id, String timeStamp, String content, String senderID) {
+        this.msgID = msgID;
+        this.chat_id = chat_id;
+        this.timeStamp = timeStamp;
+        this.content = content;
+        this.senderID = senderID;
     }
 
-    public String getSenderUsername() {
-        return senderUsername;
+    public String getChat_id() {
+        return chat_id;
     }
 
-    public void setSenderUsername(String senderUsername) {
-        this.senderUsername = senderUsername;
+    public void setChat_id(String chat_id) {
+        this.chat_id = chat_id;
     }
 
-    public int getId() {
-        return id;
+    public String getMsgID() {
+        return msgID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMsgID(String msgID) {
+        this.msgID = msgID;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
-    public String getContactId() {
-        return contactId;
+    public String getContent() {
+        return content;
     }
 
-    public void setContactId(String contactId) {
-        this.contactId = contactId;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getCreated() {
-        return created;
+    public String getSenderID() {
+        return senderID;
     }
 
-    public void setCreated(String created) {
-        this.created = created;
+    public void setSenderID(String senderID) {
+        this.senderID = senderID;
     }
 }

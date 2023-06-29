@@ -34,7 +34,7 @@
                             tools:ignore="LabelFor" />
 
                         <ImageView
-                            android:id="@+id/settingsBtn1"
+                            android:id="@+id/settingsBtn"
                             android:layout_width="60dp"
                             android:layout_height="60dp"
                             android:padding="15dp"
@@ -54,15 +54,13 @@
                             android:padding="5dp"
                             app:layout_constraintStart_toEndOf="@id/backToContactsBtn"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:srcCompat="@drawable/baseline_child_care_24" />
+                            app:layout_constraintBottom_toBottomOf="parent" />
 
                         <TextView
                             android:id="@+id/currentContactName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="Or Spiegel"
                             android:textSize="22sp"
                             android:textColor="@color/message_text"
                             app:layout_constraintStart_toEndOf="@id/currentContactImg"
@@ -84,8 +82,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:backgroundTint="#FFFFFF"
-            android:background="@drawable/background_border"
+            android:background="@color/footer_icons"
             android:layout_alignParentStart="true">
 
                 <EditText
@@ -94,6 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_toStartOf="@+id/button_gchat_send"
                     android:backgroundTint="#E6E6E6"
                     android:hint="@string/message_hint"
@@ -102,14 +100,17 @@
                     android:textColorHint="#bdbdbd"
                     android:textColor="@color/design_default_color_background" />
 
-                <Button
+                <ImageView
                     android:id="@+id/button_gchat_send"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:text="Send"
-                    android:textColor="@color/white"
-                    android:textSize="11sp" />
+                    android:layout_marginEnd="16dp"
+                    android:background="@android:color/transparent"
+                    android:layout_centerVertical="true"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_send_btn" />
+
 
         </RelativeLayout>
 

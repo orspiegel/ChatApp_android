@@ -24,7 +24,7 @@ import androidx.lifecycle.Observer;
 import com.example.myapplication.DB.UsersDB;
 import com.example.myapplication.Dao.UserDao;
 import com.example.myapplication.Entites.User;
-import com.example.myapplication.ViewModels.BaseUrlInterceptor;
+//import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 import com.example.myapplication.api.UserAPI;
 
 import java.io.ByteArrayOutputStream;

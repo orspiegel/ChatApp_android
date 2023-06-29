@@ -40,11 +40,12 @@ public class ChatListActivity extends AppCompatActivity implements ContactAPI.Co
         setContentView(R.layout.activity_chat_list);
         contactList = new MutableLiveData<>();
         ImageView settingsBtn = findViewById(R.id.settingsBtn);
-        settingsBtn.setOnClickListener(v -> {
+        /*settingsBtn.setOnClickListener(v -> {
             Log.d("Test", "settingsBtn clicked");
+            //Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);
-        });
+        });*/
         contactDB = ContactsDB.getInstance(this);
         contactDao = contactDB.contactDao();
         contactAPI = new ContactAPI(contactDao, contactList);
@@ -101,7 +102,9 @@ public class ChatListActivity extends AppCompatActivity implements ContactAPI.Co
             // For example, start the ChatActivity with the clicked contact
             Intent intent = new Intent(ChatListActivity.this, ChatActivity.class);
             intent.putExtra("contactId", contact.getId());
+            intent.putExtra("serverChatID", contact.getAutoID());
             intent.putExtra("contactName", contact.getContactName());
+            intent.putExtra("contactPic", contact.getContactPic());
             startActivity(intent);
         });
 

@@ -3,28 +3,32 @@ package com.example.myapplication.Objects;
 import java.util.List;
 
 public class MessageItem {
-    int msgID;
+    String msgID;
     String created;
     String sender;
     String content;
 
-    public MessageItem(int msgID, String created, String sender, String content) {
+    public MessageItem() {
+
+    }
+
+    public MessageItem(String msgID, String created, String sender, String content) {
         this.msgID = msgID;
         this.created = created;
         this.sender = sender;
         this.content = content;
     }
-    public MessageItem(int msgID, String created, List<String> sender, String content) {
+    public MessageItem(String msgID, String created, List<String> sender, String content) {
         this.msgID = msgID;
         this.created = created;
         this.sender = sender.get(0);
         this.content = content;
     }
-    public int getMsgID() {
+    public String getMsgID() {
         return msgID;
     }
 
-    public void setMsgID(int msgID) {
+    public void setMsgID(String msgID) {
         this.msgID = msgID;
     }
 

@@ -11,7 +11,7 @@ import com.example.myapplication.Objects.AddContactRequest;
 import com.example.myapplication.Objects.ChatResponse;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.R;
-import com.example.myapplication.ViewModels.BaseUrlInterceptor;
+//import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,11 @@ public class ContactAPI {
     public ContactAPI(ContactDao contactDao,MutableLiveData<List<Contact>> contactList){
         String url = MyApplication.context.getString(R.string.baseUrl);
 
-        OkHttpClient client = new OkHttpClient.Builder()
+        /*OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(BaseUrlInterceptor.getInstance())
+                .build();*/
+
+        OkHttpClient client = new OkHttpClient.Builder()
                 .build();
 
         retrofit = new Retrofit.Builder()
@@ -159,7 +162,7 @@ public class ContactAPI {
 //    });
 //}
 
-    public void getContactChatContent(String id) {
+    /*public void getContactChatContent(String id) {
         Call<List<MessageItem>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), id);
         call.enqueue(new Callback<List<MessageItem>>() {
             @Override
@@ -186,7 +189,7 @@ public class ContactAPI {
                 Log.d("Chat", "Error! "+t);
             }
         });
-    }
+    }*/
 
 
 //    public void update(final Contact contact) {
