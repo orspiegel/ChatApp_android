@@ -1,6 +1,6 @@
 package com.example.myapplication.Repository;
 
-import android.app.Application;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -8,9 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.myapplication.DB.ContactsDB;
 import com.example.myapplication.Dao.ContactDao;
 import com.example.myapplication.Entites.Contact;
-import com.example.myapplication.MyApplication;
 import com.example.myapplication.api.ContactAPI;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class ContactRepository {
@@ -20,8 +20,14 @@ public class ContactRepository {
     private ContactAPI contactAPI;
 
 
-    public ContactRepository(Application application)  {
-        contactsDB = ContactsDB.getInstance(application);
+    public ContactRepository(/*Application application*/Context context)  {
+        /*
+        * contactList = new MutableLiveData<>();
+
+        contactDB = ContactsDB.getInstance(this);
+        contactDao = contactDB.contactDao();
+        contactAPI = new ContactAPI(contactDao, contactList);*/
+        contactsDB = ContactsDB.getInstance(context);
         contactDao = contactsDB.contactDao();
         allContacts = new ContactListData();
         contactAPI = new ContactAPI(contactDao, allContacts);
@@ -33,33 +39,22 @@ public class ContactRepository {
         public ContactListData() {
             super();
             // local database
-            List<Contact> contacts = contactDao.getAllContacts();
-            setValue(contacts);
+            setValue(new LinkedList<>());
         }
         @Override
         protected void onActive() {
             super.onActive();
-            //change the db to the one containing the info from the server
-            contactsDB = ContactsDB.getInstance(MyApplication.context);
-            contactDao = contactsDB.contactDao();
-            // update the mutable live data
-            allContacts.postValue(contactDao.getAllContacts());
-//            new Thread(() -> {
-//                // not local database
-//                contactAPI.getAllContacts(MyApplication.getToken());
-//            }).start();
+            new Thread(() -> {
+                allContacts.postValue(contactDao.getAllContacts());
+                contactAPI.getAllContacts();
+            }).start();
         }
     }
 
     public LiveData<List<Contact>> getAll() {
         return allContacts;
     }
-//    public void add(final Contact contact) {
-//        // add contact to local db
-//        contactDao.insert(contact);
-//        // add contact to remote db
-//        contactAPI.addContact(contact);
-//    }
+
     public void update(final Contact contact) {
         // update contact on local db
         contactDao.update(contact);
@@ -74,7 +69,8 @@ public class ContactRepository {
         contactAPI.delete(contact);
     }
 
-//    public void reload() {
-//        contactAPI.getAllContacts(MyApplication.getToken());
-//    }
+    public void add(String name) {
+        contactAPI.addContact(name);
+    }
+
 }
