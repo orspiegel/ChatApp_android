@@ -1,11 +1,11 @@
 package com.example.myapplication.Entites;
 
 public class LastMessage {
-    int id;
+    String id;
     String created;
     String content;
 
-    public LastMessage(int id, String created, String content) {
+    public LastMessage(String id, String created, String content) {
         this.id = id;
         this.created = created;
         this.content = content;
@@ -14,11 +14,11 @@ public class LastMessage {
     public LastMessage() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -38,9 +38,9 @@ public class ChatListActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             startActivity(intent);
         });
-        contactDB = ContactsDB.getInstance(this);
-        contactDao = contactDB.contactDao();
-        contactAPI = new ContactAPI(contactDao, contactList);
+//        contactDB = ContactsDB.getInstance(this);
+//        contactDao = contactDB.contactDao();
+//        contactAPI = new ContactAPI(contactDao, contactList);
 
         ImageView imgView = findViewById(R.id.SpeakerImg);
         TextView nameView = findViewById(R.id.speakerName);
