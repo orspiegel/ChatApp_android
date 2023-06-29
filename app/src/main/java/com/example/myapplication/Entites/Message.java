@@ -5,24 +5,26 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import java.util.Calendar;
+import java.util.Date;
+
 @Entity(tableName = "messages_table")
 public class Message {
 
-    @NonNull@PrimaryKey(autoGenerate = false)
-    private String msgID;
+    @NonNull@PrimaryKey(autoGenerate = true)
+    private int msgID;
 
     @ColumnInfo(name = "chat_id")
     private String chat_id;
     private String timeStamp;
     private String content;
-    private String senderID;
+    private String senderUserName;
 
-    public Message(String msgID, String chat_id, String timeStamp, String content, String senderID) {
-        this.msgID = msgID;
+    public Message(String chat_id, String content, String senderUserName) {
         this.chat_id = chat_id;
-        this.timeStamp = timeStamp;
+        this.timeStamp  = Calendar.getInstance().getTime().toString();;
         this.content = content;
-        this.senderID = senderID;
+        this.senderUserName = senderUserName;
     }
 
     public String getChat_id() {
@@ -33,11 +35,20 @@ public class Message {
         this.chat_id = chat_id;
     }
 
-    public String getMsgID() {
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public int getMsgID() {
         return msgID;
     }
 
-    public void setMsgID(String msgID) {
+    public void setMsgID(int msgID) {
         this.msgID = msgID;
     }
 
@@ -49,19 +60,11 @@ public class Message {
         this.timeStamp = timeStamp;
     }
 
-    public String getContent() {
-        return content;
+    public String getSenderUserName() {
+        return senderUserName;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getSenderID() {
-        return senderID;
-    }
-
-    public void setSenderID(String senderID) {
-        this.senderID = senderID;
+    public void setSenderUserName(String senderUserName) {
+        this.senderUserName = senderUserName;
     }
 }

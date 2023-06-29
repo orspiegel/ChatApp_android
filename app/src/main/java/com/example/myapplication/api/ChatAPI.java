@@ -1,5 +1,6 @@
 package com.example.myapplication.api;
 
+import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -15,6 +16,7 @@ import com.example.myapplication.Objects.AddMessageRequest;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.Objects.MessageResponse;
 import com.example.myapplication.R;
+import com.example.myapplication.State.LoggedUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,20 +61,13 @@ public class ChatAPI {
                 Log.d("Chat", String.valueOf(response.code()));
                 new Thread(() -> {
                     if (response.body() != null) {
-                        ChatAndMessages chatAndMessages = chatAndMessagesDao.getChatWithMessages(chatID);
-                        List<MessageItem> parsedMessages = new ArrayList<>();
-                        Log.d("Chat", "Chat response: " + response.body());
-                        List<MessageResponse> chatMessages = new ArrayList<>(response.body());
-                        //chatDao.updateMessageList(chatID, chatMessages);*/
-                        for (MessageResponse mR : response.body()) {
-                            MessageItem messageItem = new MessageItem();
-                            messageItem.setContent(mR.getContent());
-                            messageItem.setCreated(mR.getCreated());
-                            messageItem.setMsgID(mR.getId());
-                            messageItem.setSender(mR.getSender());
-                            Log.d("RESULT", messageItem.getContent() + messageItem.getMsgID() + messageItem.getCreated() + messageItem.getSender());
-                            parsedMessages.add(messageItem);
-                        }
+                        //ChatAndMessages chatAndMessages = chatAndMessagesDao.getChatWithMessages(chatID);
+                        //List<MessageItem> parsedMessages = new ArrayList<>();
+                        //Log.d("Chat", "Chat response: " + response.body());
+                        //List<MessageResponse> chatMessages = new ArrayList<>(response.body());
+                        /*for (MessageResponse mR : response.body()) {
+
+                        }*/
                         //chatDao.updateMessageList(chatID, parsedMessages);
                     }
                 }).start();
@@ -96,8 +91,11 @@ public class ChatAPI {
                 Log.d("Chat", String.valueOf(response.code()));
                 new Thread(() -> {
                     Log.d("Chat", "RESPONDED");
-                    if (response.body() != null) {
-                    }
+                        messageDao.insert(new Message(chatID, msgContent, LoggedUser.getUserName()));
+                        for (Message msg : messageDao.getAllMessages()) {
+                            Log.d("Message", msg.getContent() + " " + msg.getTimeStamp() + " " + msg.getSenderUserName());
+                        }
+
                 }).start();
             }
 

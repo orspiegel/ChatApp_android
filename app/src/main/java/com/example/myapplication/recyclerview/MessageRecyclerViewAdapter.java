@@ -15,9 +15,11 @@ import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.Entites.Message;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.R;
+import com.example.myapplication.State.LoggedUser;
 import com.example.myapplication.Utils.Utils;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.MyViewHolder> {
 
@@ -59,8 +61,10 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public void onBindViewHolder(@NonNull MessageRecyclerViewAdapter.MyViewHolder holder, int position) {
         Message message = messageList.get(position);
-
-
+        /*holder.senderName.setText(message.getSenderUserName());
+        holder.isSentByMe = message.getSenderUserName().equals(LoggedUser.getUserName());
+        holder.msgContent.setText(message.getContent());
+        holder.timeStamp.setText(message.getTimeStamp());*/
     }
 
     @Override
@@ -75,12 +79,19 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView timeStamp, msgContent, senderName;
+        public boolean isSentByMe;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            senderName = itemView.findViewById(R.id.senderTextView);
-            timeStamp = itemView.findViewById(R.id.timestampTextView);
-            msgContent = itemView.findViewById(R.id.contentTextView);
+            if (isSentByMe) {
+                senderName = itemView.findViewById(R.id.senderTextView);
+                timeStamp = itemView.findViewById(R.id.text_gchat_timestamp_me);
+                msgContent = itemView.findViewById(R.id.text_gchat_message_me);
+            } else {
+                senderName = itemView.findViewById(R.id.senderTextView);
+                timeStamp = itemView.findViewById(R.id.text_gchat_timestamp_other);
+                msgContent = itemView.findViewById(R.id.text_gchat_message_other);
+            }
         }
     }
 }
