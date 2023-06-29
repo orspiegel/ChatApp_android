@@ -11,6 +11,7 @@ import com.example.myapplication.Objects.AddContactRequest;
 import com.example.myapplication.Objects.AddContactResponse;
 import com.example.myapplication.Objects.ChatResponse;
 import com.example.myapplication.Objects.MessageItem;
+import com.example.myapplication.Objects.MessageResponse;
 import com.example.myapplication.R;
 import com.google.gson.Gson;
 import com.example.myapplication.ViewModels.BaseUrlInterceptor;
@@ -127,24 +128,20 @@ public class ContactAPI {
 
 
     public void getContactChatContent(String id) {
-        Call<List<MessageItem>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), id);
-        call.enqueue(new Callback<List<MessageItem>>() {
+        Call<List<MessageResponse>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), id);
+        call.enqueue(new Callback<List<MessageResponse>>() {
             @Override
-            public void onResponse(Call<List<MessageItem>> call, Response<List<MessageItem>> response) {
-                new Thread(() -> {
-                    if (response.body() != null) {
-                        Log.d("Chat", "Chat response: " + response.body());
-
-                    }
-                }).start();
+            public void onResponse(Call<List<MessageResponse>> call, Response<List<MessageResponse>> response) {
+                // handle the response here...
             }
 
             @Override
-            public void onFailure(Call<List<MessageItem>> call, Throwable t) {
+            public void onFailure(Call<List<MessageResponse>> call, Throwable t) {
                 Log.d("Chat", "Error! "+t);
             }
         });
     }
+
 
 
 //    public void update(final Contact contact) {
