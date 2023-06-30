@@ -92,11 +92,6 @@ public class ChatActivity extends AppCompatActivity {
         }
 
         recyclerView = findViewById(R.id.rvMessageRecyclerView);
-
-
-
-
-
         messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
         messageViewModel.initializeData(chatID);
         Log.d("ChatActivity", "Loading messages...");
