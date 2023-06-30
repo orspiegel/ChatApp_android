@@ -51,6 +51,7 @@ public interface WebServiceAPI {
     Call<ConversationPageResponse> addMessage(@Path("id") String id, @Body AddMessageRequest addMessageRequest, @Header("authorization") String authorization);
 
 
+
     @DELETE("Chats/{id}")
     Call<Void> deleteContact(@Path("id") String id);
 
