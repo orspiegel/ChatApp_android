@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,8 +20,12 @@ import com.example.myapplication.DB.MessageDB;
 import com.example.myapplication.Dao.ChatsDao;
 import com.example.myapplication.Dao.MessageDao;
 import com.example.myapplication.Entites.Chat;
-import com.example.myapplication.Objects.MessageItem;
+import com.example.myapplication.Entites.Contact;
+import com.example.myapplication.Entites.Message;
+import com.example.myapplication.Entites.MessageItem;
 import com.example.myapplication.Utils.Utils;
+import com.example.myapplication.ViewModels.ContactViewModel;
+import com.example.myapplication.ViewModels.MessageViewModel;
 import com.example.myapplication.api.ChatAPI;
 import com.example.myapplication.recyclerview.MessageRecyclerViewAdapter;
 
@@ -29,7 +34,7 @@ import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private MutableLiveData<List<MessageItem>> messageList;
+    private MutableLiveData<List<Message>> messageList;
     private String chatID;
     private String token;
     private RecyclerView recyclerView;
@@ -48,17 +53,20 @@ public class ChatActivity extends AppCompatActivity {
 
     private Chat currentChat;
 
+    private MessageViewModel messageViewModel;
+
+    private List<Message> messages = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        recyclerView = findViewById(R.id.rvMessageRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         TextView contactName = findViewById(R.id.currentContactName);
         ImageView contactPic = findViewById(R.id.currentContactImg);
+
+
 
         chatDB = ChatDB.getInstance(this);
         chatsDao = chatDB.chatDao();
@@ -66,7 +74,7 @@ public class ChatActivity extends AppCompatActivity {
         messageDB = MessageDB.getInstance(this);
         messageDao = messageDB.messageDao();
 
-        chatAPI = new ChatAPI(chatsDao, messageList, messageDao);
+        //chatAPI = new ChatAPI(chatsDao, messageList, messageDao);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -83,9 +91,24 @@ public class ChatActivity extends AppCompatActivity {
             token = MyApplication.getToken();
         }
 
-        messageAdapter = new MessageRecyclerViewAdapter(this);
-        recyclerView.setAdapter(messageAdapter);
-       loadChatMessages();
+        recyclerView = findViewById(R.id.rvMessageRecyclerView);
+
+
+
+
+
+        messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
+        messageViewModel.initializeData(chatID);
+        Log.d("ChatActivity", "Loading messages...");
+
+        messageViewModel.getAllMessages().observe(this, newMessageList -> {
+            if (newMessageList != null) {
+                messages = newMessageList;
+                messageAdapter = new MessageRecyclerViewAdapter(ChatActivity.this, messages);
+                recyclerView.setAdapter(messageAdapter);
+            }
+        });
+       //loadChatMessages();
 
         EditText messageInput = findViewById(R.id.message);
         ImageView sendButton = findViewById(R.id.button_gchat_send);
@@ -117,9 +140,10 @@ public class ChatActivity extends AppCompatActivity {
         sendButton.setOnClickListener(v -> {
             //sendMessage(messageInput.getText().toString());
             if (!messageInput.getText().toString().isEmpty()) {
-                new Thread(() -> {
+                messageViewModel.add(chatID, messageInput.getText().toString());
+                /*new Thread(() -> {
                     chatAPI.addMessage(chatID, messageInput.getText().toString());
-                }).start();
+                }).start();*/
                 messageInput.setText("");
             }
         });
@@ -129,14 +153,13 @@ public class ChatActivity extends AppCompatActivity {
             finish();
         });
 
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        messageAdapter = new MessageRecyclerViewAdapter(this, messages);
+        recyclerView.setAdapter(messageAdapter);
+
     }
 
     private void loadChatMessages() {
-        Log.d("ChatActivity", "Loading messages...");
-
-        new Thread(() -> {
-            chatAPI.getChatContent(chatID);
-        }).start();
     }
 
     public void onMessageUpdate() {

@@ -8,8 +8,10 @@ import com.example.myapplication.Objects.AddContactRequest;
 import com.example.myapplication.Objects.AddContactResponse;
 import com.example.myapplication.Objects.AddMessageRequest;
 import com.example.myapplication.Objects.ChatResponse;
+import com.example.myapplication.Objects.ConversationPageResponse;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.Objects.MessageResponse;
+import com.example.myapplication.Objects.PathRequest;
 import com.example.myapplication.Objects.TokenRequest;
 
 import java.util.List;
@@ -46,7 +48,7 @@ public interface WebServiceAPI {
     @POST("Chats")
     Call<AddContactResponse> addContact(@Header("Authorization") String authorization, @Body AddContactRequest addContactRequest);
     @POST("Chats/{id}/Messages")
-    Call<Void> addMessage(@Path("id") String id, @Body AddMessageRequest addMessageRequest, @Header("authorization") String authorization);
+    Call<ConversationPageResponse> addMessage(@Path("id") String id, @Body AddMessageRequest addMessageRequest, @Header("authorization") String authorization);
 
 
     @DELETE("Chats/{id}")
