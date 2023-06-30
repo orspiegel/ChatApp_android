@@ -1,7 +1,10 @@
 package com.example.myapplication.api;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.Observer;
@@ -34,6 +37,11 @@ public class UserAPI {
     private final UserDao userDao;
 
     public UserAPI(UserDao userDao) {
+
+        SharedPreferences prefs = MyApplication.context.getSharedPreferences("AppSettings", MODE_PRIVATE);
+        String savedBaseUrl = prefs.getString("baseUrl", "http://10.0.2.2:5000/api/");
+        BaseUrlInterceptor.getInstance().setBaseUrl(savedBaseUrl);
+
         String url = MyApplication.context.getString(R.string.baseUrl);
 
         OkHttpClient client = new OkHttpClient.Builder()

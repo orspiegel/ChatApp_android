@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.State.LoggedUser;
 import com.example.myapplication.Utils.Utils;
+import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 import com.example.myapplication.ViewModels.ContactViewModel;
 import com.example.myapplication.recyclerview.ContactRecyclerViewAdapter;
 
@@ -27,8 +29,14 @@ public class ChatListActivity extends AppCompatActivity {
     private ContactRecyclerViewAdapter adapter;
     private ContactViewModel contactViewModel;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences prefs = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        String savedBaseUrl = prefs.getString("baseUrl", "http://10.0.2.2:5000/api/");
+        BaseUrlInterceptor.getInstance().setBaseUrl(savedBaseUrl);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
         contactViewModel = new ViewModelProvider(this).get(ContactViewModel.class);
@@ -47,7 +55,10 @@ public class ChatListActivity extends AppCompatActivity {
         nameView.setText(LoggedUser.getDisplayName());
         imgView.setImageBitmap(Utils.StringToBitMap(LoggedUser.getProfilePic()));
         RecyclerView recyclerView = findViewById(R.id.rvContactRecyclerView);
+        Bundle extras = getIntent().getExtras();
         adapter = new ContactRecyclerViewAdapter(this);
+        String currentUser = extras.getString("loggedInUserName");
+        adapter.setCurrentUser(currentUser);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         Log.d("ChatListActivity", "msg");

@@ -1,11 +1,17 @@
 package com.example.myapplication.api;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.myapplication.ChatListActivity;
 import com.example.myapplication.Dao.ContactDao;
 import com.example.myapplication.Entites.Contact;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.MyApplication;
 import com.example.myapplication.Objects.AddContactRequest;
 import com.example.myapplication.Objects.AddContactResponse;
@@ -35,6 +41,9 @@ public class ContactAPI {
     private MutableLiveData<List<Contact>> contactList;
 
     public ContactAPI(ContactDao contactDao,MutableLiveData<List<Contact>> contactList){
+        SharedPreferences prefs = MyApplication.context.getSharedPreferences("AppSettings", MODE_PRIVATE);
+        String savedBaseUrl = prefs.getString("baseUrl", "http://10.0.2.2:5000/api/");
+        BaseUrlInterceptor.getInstance().setBaseUrl(savedBaseUrl);
         String url = MyApplication.context.getString(R.string.baseUrl);
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -91,6 +100,7 @@ public class ContactAPI {
             @Override
             public void onFailure(Call<List<ChatResponse>> call, Throwable t) {
                 Log.d("ContactAPI", "Response error: "+t);
+                Toast.makeText(MyApplication.context, "Error in displaying Contact list", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -104,65 +114,34 @@ public class ContactAPI {
             @Override
             public void onResponse(Call<AddContactResponse> call, Response<AddContactResponse> response) {
                 Log.d("onResponse add contact","response"+response);
-                if (response.body() != null) {
-                    Log.d("Add contact", "Added contact: " + response.body());
-                    Log.d("Add contact", "Added contact: " + response.body().getId());
-                    Log.d("Add contact", "Added contact: " + response.body().getContactResponse().getDisplayName());
-                    Log.d("Add contact", "Added contact: " + response.body().getContactResponse().getUsername());
-                    Contact contact = new Contact(response.body());
-                    new Thread(()->{
-                        contactDao.insert(contact);
-                    }).start();
-                    List<Contact> newContactList = contactList.getValue();
-                    newContactList.add(contact);
-                    contactList.postValue(newContactList);
+
+                if (response.code() == 200) {
+                    if (response.body() != null) {
+                        Log.d("Add contact", "Added contact: " + response.body());
+                        Log.d("Add contact", "Added contact: " + response.body().getId());
+                        Log.d("Add contact", "Added contact: " + response.body().getContactResponse().getDisplayName());
+                        Log.d("Add contact", "Added contact: " + response.body().getContactResponse().getUsername());
+                        Contact contact = new Contact(response.body());
+                        new Thread(() -> {
+                            contactDao.insert(contact);
+                        }).start();
+                        List<Contact> newContactList = contactList.getValue();
+                        newContactList.add(contact);
+                        contactList.postValue(newContactList);
+                    }
+                } else {
+                    Toast.makeText(MyApplication.context, "Select a valid contact - " +
+                            "another signed up user not already in your contacts list", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<AddContactResponse> call, Throwable t) {
                 Log.d("AddContact", "Error! " + t);
+                Toast.makeText(MyApplication.context, "Something went wrong...", Toast.LENGTH_LONG).show();
             }
         });
     }
-
-
-
-    /*public void getContactChatContent(String id) {
-        Call<List<MessageResponse>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), id);
-        call.enqueue(new Callback<List<getAllMessagesResponse>>() {
-            @Override
-            public void onResponse(Call<List<getAllMessagesResponse>> call, Response<List<getAllMessagesResponse>> response) {
-                // handle the response here...
-            }
-
-            @Override
-            public void onFailure(Call<List<getAllMessagesResponse>> call, Throwable t) {
-                Log.d("Chat", "Error! "+t);
-            }
-        });
-    }*/
-
-
-
-//    public void update(final Contact contact) {
-//        // update contact on local db
-//        contactDao.update(contact);
-//        // update contact on remote db
-//        api.update(contact);
-//    }
-//
-//    public void delete(final Contact contact) {
-//        // delete contact from local db
-//        contactDao.delete(contact);
-//        // delete contact from remote db
-//        webServiceAPI.deleteContact(contact.getId());
-//    }
-//
-//    public void reload() {
-//        api.get();
-//    }
-//
     public void update(Contact contact) {
     }
 

@@ -1,7 +1,12 @@
 package com.example.myapplication.api;
 
-import android.util.Log;
+import static android.content.Context.MODE_PRIVATE;
 
+import android.content.SharedPreferences;
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Insert;
 
@@ -20,6 +25,7 @@ import com.example.myapplication.Objects.User;
 import com.example.myapplication.Objects.getAllMessagesResponse;
 import com.example.myapplication.R;
 import com.example.myapplication.State.LoggedUser;
+import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +39,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ChatAPI {
 
+    private  String currentUserName;
     private Retrofit retrofit;
     // remote
     private WebServiceAPI webServiceAPI;
@@ -46,7 +53,12 @@ public class ChatAPI {
     private MutableLiveData<List<Message>> messages;
 
 
-    public ChatAPI(ChatsDao chatDao, MutableLiveData<List<Message>> messages, MessageDao messageDao){
+    public ChatAPI(ChatsDao chatDao, MutableLiveData<List<Message>> messages, MessageDao messageDao, String currentUserName){
+
+        SharedPreferences prefs = MyApplication.context.getSharedPreferences("AppSettings", MODE_PRIVATE);
+        String savedBaseUrl = prefs.getString("baseUrl", "http://10.0.2.2:5000/api/");
+        BaseUrlInterceptor.getInstance().setBaseUrl(savedBaseUrl);
+
         String url = MyApplication.context.getString(R.string.baseUrl);
         retrofit = (new Retrofit.Builder().baseUrl(url))
                 .addConverterFactory(GsonConverterFactory.create())
@@ -55,6 +67,8 @@ public class ChatAPI {
         this.chatDao = chatDao;
         this.messages = messages;
         this.messageDao = messageDao;
+        this.currentUserName = currentUserName;
+        Log.d("Please", this.currentUserName);
     }
 
     public void getChatContent(String chatID) {
@@ -66,6 +80,11 @@ public class ChatAPI {
                 Executors.newSingleThreadExecutor().execute(new Runnable() {
 
                     public void run() {
+
+                        if (response.code() == 404) {
+                            Toast.makeText(MyApplication.context, "Chat not found.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         List<MessageItem> parsedMessages = new ArrayList<>();
                         for (getAllMessagesResponse mR : response.body()) {
                             Log.i("response", "Res: " + mR.getId());
@@ -78,22 +97,14 @@ public class ChatAPI {
                                     mR.getContent());
                             parsedMessages.add(parsed);
                         }
-                        if (parsedMessages.size() > 0) {
-                            messageDao.deleteChatMessages(chatID);
+
                             for (MessageItem mI : parsedMessages) {
                                 Message chatMessage = new Message(mI, chatID);
                                 messageDao.insert(chatMessage);
                             }
 
-                            for (Message message : messageDao.getChatMessages(chatID)) {
-                                Log.d("insertion complete", message.getChat_id() + " " +
-                                        message.getContent() + " " + message.getCreated() + " " +
-                                        message.getSenderUserName() + " " + message.getMsgID());
-
-                            }
-
                             messages.postValue(messageDao.getChatMessages(chatID));
-                        }
+
                     }
                 });
             }
@@ -101,6 +112,8 @@ public class ChatAPI {
             @Override
             public void onFailure(Call<List<getAllMessagesResponse>> call, Throwable t) {
                 Log.d("Chat", "Error! "+t);
+                Toast.makeText(MyApplication.context, "Could not Load chat messages", Toast.LENGTH_LONG).show();
+
             }
         });
     }
@@ -131,7 +144,7 @@ public class ChatAPI {
                                 lastServerMessage.getCreated(), lastServerMessage.getSender(),
                                 lastServerMessage.getContent());
 
-                        Message newMessage = new Message(lastMessage, chatID);
+                        Message newMessage = new Message(lastMessage, chatID, currentUserName);
                         long newMsgID = messageDao.insert(newMessage);
 
                         if (newMsgID != -1) {
@@ -158,6 +171,7 @@ public class ChatAPI {
             @Override
             public void onFailure(Call<ConversationPageResponse> call, Throwable t) {
                 Log.d("Chat", "Error! "+t);
+                Toast.makeText(MyApplication.context, "Target User/Chat not found.", Toast.LENGTH_LONG).show();
             }
         });
     }

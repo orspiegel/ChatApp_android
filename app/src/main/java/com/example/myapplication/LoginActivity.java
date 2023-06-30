@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.DB.UsersDB;
 import com.example.myapplication.Dao.UserDao;
+import com.example.myapplication.State.CurrentUser;
 import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 import com.example.myapplication.api.UserAPI;
 
@@ -22,8 +24,11 @@ public class LoginActivity extends AppCompatActivity implements UserAPI.TokenCal
     private UserDao userDao;
     private UserAPI userAPI;
 
+    private String currentUserName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         BaseUrlInterceptor.getInstance().setBaseUrl("http://10.0.2.2:5000/api/");
@@ -54,6 +59,7 @@ public class LoginActivity extends AppCompatActivity implements UserAPI.TokenCal
     }
     public void onTokenReceived(String token) {
         Log.d("LoginActivity", "Token received is " + token);
+        currentUserName = username.getText().toString();
         String enteredUsername = username.getText().toString().trim();
         String enteredPassword = password.getText().toString().trim();
         userAPI.login(enteredUsername, enteredPassword, token, this);
@@ -61,7 +67,8 @@ public class LoginActivity extends AppCompatActivity implements UserAPI.TokenCal
 
     public void onLoginSuccess(Context context, Class<ChatListActivity> activityClass) {
         Intent intent = new Intent(context, activityClass);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);;
+        intent.putExtra("loggedInUserName", currentUserName);
         MyApplication.context.startActivity(intent);
 
     }
