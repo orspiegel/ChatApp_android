@@ -1,35 +1,26 @@
 package com.example.myapplication.Objects;
 
 public class getAllMessagesResponse {
+    String id;
+    String created;
+
     User sender;
 
     String content;
-    String _id;
-    String created;
-
-    int __v;
 
     public getAllMessagesResponse(String id, String content, String created, User sender) {
-        this._id = id;
+        this.id = id;
         this.content = content;
         this.created = created;
-        this.sender = sender;
+        this.sender = new User(sender);
     }
 
-    public String get_id() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
-    }
-
-    public int get_v() {
-        return __v;
-    }
-
-    public void set_v(int _v) {
-        this.__v = __v;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public User getSender() {
@@ -38,14 +29,6 @@ public class getAllMessagesResponse {
 
     public void setSender(User sender) {
         this.sender = sender;
-    }
-
-    public String getId() {
-        return _id;
-    }
-
-    public void setId(String id) {
-        this._id = id;
     }
 
     public String getContent() {
