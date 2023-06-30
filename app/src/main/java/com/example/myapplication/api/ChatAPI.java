@@ -56,7 +56,7 @@ public class ChatAPI {
     }
 
     public void getChatContent(String chatID) {
-        Call<List<MessageResponse>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), chatID);
+        /*Call<List<MessageResponse>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), chatID);
         call.enqueue(new Callback<List<MessageResponse>>() {
             @Override
             public void onResponse(Call<List<MessageResponse>> call, Response<List<MessageResponse>> response) {
@@ -99,12 +99,12 @@ public class ChatAPI {
             public void onFailure(Call<List<MessageResponse>> call, Throwable t) {
                 Log.d("Chat", "Error! "+t);
             }
-        });
+        });*/
     }
 
     public void addMessage(String chatID, String msgContent) {
 
-        //TODO: ExpectedResponse - Chat Object - chatID, Araay of Two User ID's and Array of Messages
+        //TODO: ExpectedResponse - Chat Object - chatID, Array of Two User ID's and Array of Messages
         // Current failure caused by "Error! com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 45 path $.users[0]"
         Log.d("TO CREATE", chatID + " " + msgContent);
         AddMessageRequest addMessageRequest = new AddMessageRequest(msgContent);
@@ -116,6 +116,7 @@ public class ChatAPI {
             public void onResponse(Call<ConversationPageResponse> call, Response<ConversationPageResponse> response) {
                 Log.d("Chat", String.valueOf(response.code()));
                 new Thread(() -> {
+                    Log.d("Chat", "AHHHHH");
                     Log.d("LastMessage", response.body().getId() + " " + response.body().getUsers().get(0)
                     + " " + response.body().getUsers().get(1) + " ");
                     MessageResponse lastServerMessage = response.body().getMessages()

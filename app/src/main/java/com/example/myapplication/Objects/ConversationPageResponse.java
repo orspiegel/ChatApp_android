@@ -4,29 +4,29 @@ import java.util.List;
 
 public class ConversationPageResponse {
 
-    String id;
-    List<User> users;
+    String _id;
+    List<String> users;
     List<MessageResponse> messages;
 
-    public ConversationPageResponse(String id, List<User> users, List<MessageResponse> messages) {
-        this.id = id;
+    public ConversationPageResponse(String id, List<String> users, List<MessageResponse> messages) {
+        this._id = id;
         this.users = users;
         this.messages = messages;
     }
 
     public String getId() {
-        return id;
+        return _id;
     }
 
     public void setId(String id) {
-        this.id = id;
+        this._id = id;
     }
 
-    public List<User> getUsers() {
+    public List<String> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(List<String> users) {
         this.users = users;
     }
 
