@@ -12,14 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-@Entity(tableName = "messages_table",
-        foreignKeys = @ForeignKey(
-                entity = User.class,
-                parentColumns = "userName",
-                childColumns = "senderUserName",
-                onDelete = ForeignKey.CASCADE
-        ),
-        indices = {@Index("senderUserName")})
+@Entity(tableName = "messages_table")
 public class Message {
 
     @PrimaryKey
@@ -48,7 +41,7 @@ public class Message {
         this.msgID = messageItem.getMsgID();
         this.created = messageItem.getCreated();
         this.content = messageItem.getContent();
-        this.senderUserName = messageItem.getSender().getUserName();
+        this.senderUserName = messageItem.getSender();
         this.chat_id = chat_id;
     }
 

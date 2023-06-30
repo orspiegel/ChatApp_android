@@ -14,6 +14,7 @@ import com.example.myapplication.api.ChatAPI;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class MessageRepository {
     private MessageDao messageDao;
@@ -46,10 +47,12 @@ class MessageListData extends MutableLiveData<List<Message>> {
     @Override
     protected void onActive() {
         super.onActive();
-        new Thread(() -> {
-            allMessages.postValue(messageDao.getChatMessages(chatID));
-            chatAPI.getChatContent(chatID);
-        }).start();
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            public void run() {
+                allMessages.postValue(messageDao.getChatMessages(chatID));
+                chatAPI.getChatContent(chatID);
+            }
+        });
     }
 }
     public LiveData<List<Message>> getAll() {

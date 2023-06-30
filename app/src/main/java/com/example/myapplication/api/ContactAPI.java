@@ -12,6 +12,7 @@ import com.example.myapplication.Objects.AddContactResponse;
 import com.example.myapplication.Objects.ChatResponse;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.Objects.MessageResponse;
+import com.example.myapplication.Objects.getAllMessagesResponse;
 import com.example.myapplication.R;
 import com.google.gson.Gson;
 import com.example.myapplication.ViewModels.BaseUrlInterceptor;
@@ -127,20 +128,20 @@ public class ContactAPI {
 
 
 
-    public void getContactChatContent(String id) {
+    /*public void getContactChatContent(String id) {
         Call<List<MessageResponse>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), id);
-        call.enqueue(new Callback<List<MessageResponse>>() {
+        call.enqueue(new Callback<List<getAllMessagesResponse>>() {
             @Override
-            public void onResponse(Call<List<MessageResponse>> call, Response<List<MessageResponse>> response) {
+            public void onResponse(Call<List<getAllMessagesResponse>> call, Response<List<getAllMessagesResponse>> response) {
                 // handle the response here...
             }
 
             @Override
-            public void onFailure(Call<List<MessageResponse>> call, Throwable t) {
+            public void onFailure(Call<List<getAllMessagesResponse>> call, Throwable t) {
                 Log.d("Chat", "Error! "+t);
             }
         });
-    }
+    }*/
 
 
 

@@ -15,7 +15,7 @@ import com.example.myapplication.Entites.Message;
 import com.example.myapplication.Dao.MessageDao;
 import com.example.myapplication.Entites.User;
 
-@Database(entities = {Message.class, User.class}, version = 3)
+@Database(entities = {Message.class, User.class}, version = 4)
 
 public abstract class MessageDB extends RoomDatabase {
 
