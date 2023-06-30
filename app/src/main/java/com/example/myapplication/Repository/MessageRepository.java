@@ -28,13 +28,13 @@ public class MessageRepository {
 
     private String chatID;
 
-    public MessageRepository(Context context, String chatID)  {
+    public MessageRepository(Context context, String chatID, String currentUserName)  {
         chatDB = chatDB.getInstance(context);
         chatsDao = chatDB.chatDao();
         messageDB = messageDB.getInstance(context);
         messageDao = messageDB.messageDao();
         allMessages = new MessageListData();
-        chatAPI = new ChatAPI(chatsDao, allMessages, messageDao);
+        chatAPI = new ChatAPI(chatsDao, allMessages, messageDao, currentUserName);
         this.chatID = chatID;
     }
 

@@ -26,10 +26,10 @@ public class MessageViewModel extends ViewModel implements Serializable {
         repository.add(chatID, message);
     }
 
-    public void initializeData(String chatID) {
+    public void initializeData(String chatID, String currentUserName) {
         if (!inChat) {
             inChat = true;
-            this.repository = new MessageRepository(MyApplication.context, chatID);
+            this.repository = new MessageRepository(MyApplication.context, chatID, currentUserName);
             this.allMessages = repository.getAll();
         }
     }

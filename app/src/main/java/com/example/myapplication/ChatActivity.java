@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,6 +25,7 @@ import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.Entites.Message;
 import com.example.myapplication.Entites.MessageItem;
 import com.example.myapplication.Utils.Utils;
+import com.example.myapplication.ViewModels.BaseUrlInterceptor;
 import com.example.myapplication.ViewModels.ContactViewModel;
 import com.example.myapplication.ViewModels.MessageViewModel;
 import com.example.myapplication.api.ChatAPI;
@@ -57,9 +59,16 @@ public class ChatActivity extends AppCompatActivity {
 
     private List<Message> messages = new ArrayList<>();
 
+    private String currentUserName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences prefs = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        String savedBaseUrl = prefs.getString("baseUrl", "http://10.0.2.2:5000/api/");
+        BaseUrlInterceptor.getInstance().setBaseUrl(savedBaseUrl);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
@@ -78,8 +87,9 @@ public class ChatActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            //loggedInUserId = extras.getString("loggedInUserId");
-//            contactId = extras.getInt("contactId"); // convert the contactId to String here
+            currentUserName = extras.getString("currentUserName");
+//
+            contactId = extras.getInt("contactId");
             chatID = extras.getString("serverChatID");
             currentChat = new Chat(chatID);
             new Thread(() -> {
@@ -98,13 +108,13 @@ public class ChatActivity extends AppCompatActivity {
 
 
         messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
-        messageViewModel.initializeData(chatID);
+        messageViewModel.initializeData(chatID, currentUserName);
         Log.d("ChatActivity", "Loading messages...");
 
         messageViewModel.getAllMessages().observe(this, newMessageList -> {
             if (newMessageList != null) {
                 messages = newMessageList;
-                messageAdapter = new MessageRecyclerViewAdapter(ChatActivity.this, messages);
+                messageAdapter = new MessageRecyclerViewAdapter(ChatActivity.this, messages, currentUserName);
                 recyclerView.setAdapter(messageAdapter);
             }
         });
@@ -154,26 +164,9 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        messageAdapter = new MessageRecyclerViewAdapter(this, messages);
+        messageAdapter = new MessageRecyclerViewAdapter(this, messages, currentUserName);
         recyclerView.setAdapter(messageAdapter);
 
 
-    }
-
-    private void loadChatMessages() {
-    }
-
-    public void onMessageUpdate() {
-
-        //List<MessageItem> messages = chatsDao.getAllMessages(chatID);
-        //List<MessageItem> messageList = chatsDao.getAllMessages(chatID);
-        //Log.d("ChatListActivity", "contacts on DB:"+messageList);
-        //Log.d("ChatListActivity", "contacts size on DB:"+messageList.size());
-
-
-        runOnUiThread(()-> {
-            //messageAdapter.setMessageList(messageList);
-            //messageAdapter.notifyDataSetChanged(); // Notify the adapter that the data has changed
-        });
     }
 }

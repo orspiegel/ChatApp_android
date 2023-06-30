@@ -3,6 +3,7 @@ package com.example.myapplication.State;
 import com.example.myapplication.Entites.Contact;
 
 public class LoggedUser {
+
     static String userName;
     static String displayName;
     static String profilePic;

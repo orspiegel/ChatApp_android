@@ -22,7 +22,11 @@ public class Message {
     private String content;
     private String created;
 
+    private String currentUserName;
+
     private String chat_id;
+
+
 
     @ColumnInfo(name = "senderUserName")
     private String senderUserName;
@@ -43,6 +47,23 @@ public class Message {
         this.content = messageItem.getContent();
         this.senderUserName = messageItem.getSender();
         this.chat_id = chat_id;
+    }
+
+    public Message(MessageItem lastMessage, String chatID, String currentUserName) {
+        this.msgID = lastMessage.getMsgID();
+        this.created = lastMessage.getCreated();
+        this.content = lastMessage.getContent();
+        this.senderUserName = lastMessage.getSender();
+        this.chat_id = chatID;
+        this.currentUserName = currentUserName;
+    }
+
+    public String getCurrentUserName() {
+        return currentUserName;
+    }
+
+    public void setCurrentUserName(String currentUserName) {
+        this.currentUserName = currentUserName;
     }
 
     public String getChat_id() {

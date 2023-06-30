@@ -2,6 +2,8 @@ package com.example.myapplication.Entites;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.OnConflictStrategy;
 import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 import androidx.room.TypeConverters;
@@ -16,6 +18,7 @@ public class Chat {
 
     @PrimaryKey
     @NonNull
+    @OnConflictStrategy
     private String id;
 
     public Chat(@NonNull String id) {

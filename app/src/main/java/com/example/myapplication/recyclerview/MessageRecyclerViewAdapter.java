@@ -1,5 +1,8 @@
 package com.example.myapplication.recyclerview;
 
+import static android.view.View.GONE;
+
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,9 +29,14 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
 
     private List<Message> messageList;
 
-    public MessageRecyclerViewAdapter(Context context, List<Message> messageList) {
+    private String currentUserName;
+
+    private boolean sentByMe;
+
+    public MessageRecyclerViewAdapter(Context context, List<Message> messageList, String currentUserName) {
         this.context = context;
         this.messageList = messageList;
+        this.currentUserName = currentUserName;
         notifyDataSetChanged();
         Log.d("adapter", "Entered to adapter");
     }
@@ -38,29 +46,31 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
         this.messageList = messageList;
     }
 
+    public boolean isSentByMe() {
+        return sentByMe;
+    }
+
+    public void setSentByMe(boolean sentByMe) {
+        this.sentByMe = sentByMe;
+    }
+
     @NonNull
     @Override
     public MessageRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.message_wrapper, parent, false);
-        return new MessageRecyclerViewAdapter.MyViewHolder(view);
+        return new MessageRecyclerViewAdapter.MyViewHolder(view, isSentByMe());
     }
 
     @Override
     public void onBindViewHolder(@NonNull MessageRecyclerViewAdapter.MyViewHolder holder, int position) {
         Message message = messageList.get(position);
-        //Log.d("userName", message.getSenderUserName());
-        //Log.d("userName", LoggedUser.getUserName());
-        //Log.d("userName", message.getMsgID());
-        //Log.d("userName", message.getCreated().getClass().toString());
-        //Log.d("userName", message.getContent());
-        holder.sentByMe = (message.getSenderUserName().equals(LoggedUser.getUserName()));
-        //holder.sentByMe = false;
+        //Log.d("1", message.getCurrentUserName());
+        Log.d("2", currentUserName);
+        Log.d("Checkcheck", String.valueOf(currentUserName.equals(message.getCurrentUserName())));
+                setSentByMe(currentUserName.equals(message.getCurrentUserName()));
         holder.timeStamp.setText(message.getCreated());
         holder.msgContent.setText(message.getContent());
-        //holder.senderName.setText(message.s);
-
-
     }
 
     @Override
@@ -75,16 +85,23 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView timeStamp, msgContent, senderName;
-        public boolean sentByMe;
 
-        public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, boolean sentByMe) {
             super(itemView);
             if (sentByMe) {
                 timeStamp = itemView.findViewById(R.id.text_gchat_timestamp_me);
                 msgContent = itemView.findViewById(R.id.text_gchat_message_me);
+                timeStamp.setVisibility(View.VISIBLE);
+                msgContent.setVisibility(View.VISIBLE);
+                itemView.findViewById(R.id.text_gchat_message_other).setVisibility(View.GONE);
+                itemView.findViewById(R.id.text_gchat_timestamp_other).setVisibility(GONE);
             } else {
                 timeStamp = itemView.findViewById(R.id.text_gchat_timestamp_other);
                 msgContent = itemView.findViewById(R.id.text_gchat_message_other);
+                timeStamp.setVisibility(View.VISIBLE);
+                msgContent.setVisibility(View.VISIBLE);
+                itemView.findViewById(R.id.text_gchat_timestamp_me).setVisibility(View.GONE);
+                itemView.findViewById(R.id.text_gchat_message_me).setVisibility(GONE);
             }
         }
     }

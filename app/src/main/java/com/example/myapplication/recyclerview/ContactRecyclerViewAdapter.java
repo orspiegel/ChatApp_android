@@ -25,6 +25,8 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
     private List<Contact> contactList;
     private OnContactClickListener onContactClickListener; // New listener
 
+    private String currentUser;
+
     public ContactRecyclerViewAdapter(Context context) {
         this.context = context;
         Log.d("adapter", "Entered to adapter");
@@ -37,6 +39,10 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
     public void setOnContactClickListener(OnContactClickListener listener) {
         this.onContactClickListener = listener;
+    }
+
+    public void setCurrentUser(Object loggedInUserName) {
+        currentUser = (String) loggedInUserName;
     }
 
     public interface OnContactClickListener {
@@ -61,6 +67,7 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
         holder.itemView.setOnClickListener(v -> {
             Intent clickedContact = new Intent(v.getContext(), ChatActivity.class);
+            clickedContact.putExtra("currentUserName", this.currentUser);
             clickedContact.putExtra("serverChatID", contact.getAutoID());
             clickedContact.putExtra("displayName", contact.getContactName());
             clickedContact.putExtra("profilePic", contact.getContactPic());
