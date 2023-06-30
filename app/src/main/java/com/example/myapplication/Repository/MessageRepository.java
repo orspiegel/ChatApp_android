@@ -9,8 +9,10 @@ import com.example.myapplication.DB.ChatDB;
 import com.example.myapplication.DB.MessageDB;
 import com.example.myapplication.Dao.ChatsDao;
 import com.example.myapplication.Dao.MessageDao;
+import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.Entites.Message;
 import com.example.myapplication.api.ChatAPI;
+import com.example.myapplication.api.MessageAPI;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,21 +22,15 @@ public class MessageRepository {
     private MessageDao messageDao;
     private MessageListData allMessages;
     private MessageDB messageDB;
-
-    private ChatDB chatDB;
-
-    private ChatsDao chatsDao;
-    private ChatAPI chatAPI;
-
+    private MessageAPI messageAPI;
     private String chatID;
+    private Contact currContact;
 
     public MessageRepository(Context context, String chatID)  {
-        chatDB = chatDB.getInstance(context);
-        chatsDao = chatDB.chatDao();
         messageDB = messageDB.getInstance(context);
         messageDao = messageDB.messageDao();
         allMessages = new MessageListData();
-        chatAPI = new ChatAPI(chatsDao, allMessages, messageDao);
+        messageAPI = new MessageAPI(messageDao, allMessages);
         this.chatID = chatID;
     }
 
@@ -47,12 +43,16 @@ class MessageListData extends MutableLiveData<List<Message>> {
     @Override
     protected void onActive() {
         super.onActive();
-        Executors.newSingleThreadExecutor().execute(new Runnable() {
-            public void run() {
-                allMessages.postValue(messageDao.getChatMessages(chatID));
-                chatAPI.getChatContent(chatID);
-            }
-        });
+        new Thread(()-> {
+            allMessages.postValue(messageDao.getChatMessages(chatID));
+            messageAPI.getChatContent(chatID);
+        }).start();
+//        Executors.newSingleThreadExecutor().execute(new Runnable() {
+//            public void run() {
+//                allMessages.postValue(messageDao.getChatMessages(chatID));
+//                chatAPI.getChatContent(chatID);
+//            }
+//        });
     }
 }
     public LiveData<List<Message>> getAll() {
@@ -71,6 +71,8 @@ class MessageListData extends MutableLiveData<List<Message>> {
         //chatAPI.delete(message);
     }*/
     public void add(String chatId, String msg) {
-        chatAPI.addMessage(chatId, msg);
+        messageAPI.addMessage(chatId, msg);
     }
+
+
 }

@@ -93,27 +93,27 @@ public class UserAPI {
             }
         });
     }
-    public void login(String username, String password, String token) {
-        Call<User> call = webServiceAPI.getUserInfo("bearer " + token, username);
-        Log.d("login function", "input token: "+token+" username: "+username);
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                Log.d("UserApi", "Response: "+response);
-                User user = response.body();
-                Log.d("UserApi", "Response body: "+user);
-                Log.d("UserApi", "In login");
-                LoggedUser.setLoggedIn(user.getUserName(), user.getDisplayName(), user.getProfilePic());
-                Intent intent = new Intent(MyApplication.context, ChatListActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                MyApplication.context.startActivity(intent);
-            }
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Log.d("UserApi", "Error: "+t);
-            }
-        });
-    }
+//    public void login(String username, String password, String token) {
+//        Call<User> call = webServiceAPI.getUserInfo("bearer " + token, username);
+//        Log.d("login function", "input token: "+token+" username: "+username);
+//        call.enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//                Log.d("UserApi", "Response: "+response);
+//                User user = response.body();
+//                Log.d("UserApi", "Response body: "+user);
+//                Log.d("UserApi", "In login");
+//                LoggedUser.setLoggedIn(user.getUserName(), user.getDisplayName(), user.getProfilePic());
+//                Intent intent = new Intent(MyApplication.context, ChatListActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                MyApplication.context.startActivity(intent);
+//            }
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//                Log.d("UserApi", "Error: "+t);
+//            }
+//        });
+//    }
 
 
     public void getToken(String username, String password, TokenCallback callback) {
@@ -150,14 +150,16 @@ public class UserAPI {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-//                Log.d("UserApi", "Response: "+response);
-                User user = response.body();
-                Log.d("UserApi", "Response body: "+user.getDisplayName());
-//                Log.d("UserApi", "Response body: "+user.getProfilePic());
-
-                Log.d("UserApi", "In login");
-                LoggedUser.setLoggedIn(user.getUserName(),user.getDisplayName(), user.getProfilePic());
-                callback.onLoginSuccess(MyApplication.context, ChatListActivity.class);
+                if (response != null) {
+                    User user = response.body();
+                    Log.d("UserApi", "Response body: "+user.getDisplayName());
+                    Log.d("UserApi", "In login");
+                    LoggedUser.setLoggedIn(user.getUserName(),user.getDisplayName(), user.getProfilePic());
+                    Log.d("UserApi", "Loggged in user: "+LoggedUser.getUserName());
+                    Log.d("UserApi", "Loggged in user: "+LoggedUser.getDisplayName());
+//                    Log.d("UserApi", "Loggged in user: "+LoggedUser.getProfilePic());
+                    callback.onLoginSuccess(MyApplication.context, ChatListActivity.class);
+                }
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {

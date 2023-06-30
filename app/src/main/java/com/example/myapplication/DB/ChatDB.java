@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.myapplication.Dao.ChatsDao;
 import com.example.myapplication.Entites.Chat;
 
-@Database(entities = {Chat.class}, version = 9)
+@Database(entities = {Chat.class}, version = 30)
 public abstract class ChatDB extends RoomDatabase {
 
     private static ChatDB instance;

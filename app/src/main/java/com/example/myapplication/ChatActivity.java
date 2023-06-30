@@ -23,6 +23,7 @@ import com.example.myapplication.Entites.Chat;
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.Entites.Message;
 import com.example.myapplication.Entites.MessageItem;
+import com.example.myapplication.State.CurrentContact;
 import com.example.myapplication.Utils.Utils;
 import com.example.myapplication.ViewModels.ContactViewModel;
 import com.example.myapplication.ViewModels.MessageViewModel;
@@ -36,6 +37,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private MutableLiveData<List<Message>> messageList;
     private String chatID;
+
     private String token;
     private RecyclerView recyclerView;
     private MessageRecyclerViewAdapter messageAdapter;
@@ -66,8 +68,6 @@ public class ChatActivity extends AppCompatActivity {
         TextView contactName = findViewById(R.id.currentContactName);
         ImageView contactPic = findViewById(R.id.currentContactImg);
 
-
-
         chatDB = ChatDB.getInstance(this);
         chatsDao = chatDB.chatDao();
 
@@ -77,26 +77,18 @@ public class ChatActivity extends AppCompatActivity {
         //chatAPI = new ChatAPI(chatsDao, messageList, messageDao);
 
         Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            //loggedInUserId = extras.getString("loggedInUserId");
-//            contactId = extras.getInt("contactId"); // convert the contactId to String here
-            chatID = extras.getString("serverChatID");
+        if (CurrentContact.isClicked == true) {
+            chatID = CurrentContact.getId();
             currentChat = new Chat(chatID);
             new Thread(() -> {
                 chatsDao.insert(currentChat);
             }).start();
-            contactName.setText(extras.getString("displayName"));
-            contactPic.setImageBitmap(Utils.StringToBitMap(extras.getString("profilePic")));
-
+            contactName.setText(CurrentContact.getDisplayName());
+            contactPic.setImageBitmap(Utils.StringToBitMap(CurrentContact.getProfilePic()));
             token = MyApplication.getToken();
         }
 
         recyclerView = findViewById(R.id.rvMessageRecyclerView);
-
-
-
-
-
         messageViewModel = new ViewModelProvider(this).get(MessageViewModel.class);
         messageViewModel.initializeData(chatID);
         Log.d("ChatActivity", "Loading messages...");
@@ -130,13 +122,11 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
 
-
             @Override
             public void afterTextChanged(Editable s) {
 
             }
         });
-
         sendButton.setOnClickListener(v -> {
             //sendMessage(messageInput.getText().toString());
             if (!messageInput.getText().toString().isEmpty()) {

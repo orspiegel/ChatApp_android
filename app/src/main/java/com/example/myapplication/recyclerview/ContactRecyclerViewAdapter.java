@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.ChatActivity;
 import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.R;
+import com.example.myapplication.State.CurrentContact;
 import com.example.myapplication.Utils.Utils;
 
 import java.util.List;
@@ -61,9 +62,11 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
         holder.itemView.setOnClickListener(v -> {
             Intent clickedContact = new Intent(v.getContext(), ChatActivity.class);
-            clickedContact.putExtra("serverChatID", contact.getAutoID());
-            clickedContact.putExtra("displayName", contact.getContactName());
-            clickedContact.putExtra("profilePic", contact.getContactPic());
+//            CurrentContact.displayName
+            CurrentContact.setCurrentContact(contact.getAutoID(), contact.getContactName(), contact.getContactPic());
+//            clickedContact.putExtra("serverChatID", contact.getAutoID());
+//            clickedContact.putExtra("displayName", contact.getContactName());
+//            clickedContact.putExtra("profilePic", contact.getContactPic());
 
             v.getContext().startActivity(clickedContact);
 

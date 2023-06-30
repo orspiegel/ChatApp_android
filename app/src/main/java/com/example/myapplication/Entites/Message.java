@@ -1,4 +1,6 @@
 package com.example.myapplication.Entites;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -40,6 +42,7 @@ public class Message {
     public Message(@NonNull MessageItem messageItem, String chat_id) {
         this.msgID = messageItem.getMsgID();
         this.created = messageItem.getCreated();
+        Log.d("Created","message created by: "+created);
         this.content = messageItem.getContent();
         this.senderUserName = messageItem.getSender();
         this.chat_id = chat_id;
