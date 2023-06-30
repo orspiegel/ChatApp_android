@@ -3,6 +3,9 @@ package com.example.myapplication.Entites;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+
+
 @Entity(tableName = "users_table")
 public class User {
     public void setPassword(String password) {
@@ -18,10 +21,10 @@ public class User {
     public String getUserName() {
         return userName;
     }
-
-    private  String userName;
     @PrimaryKey
     @NonNull
+    private  String userName;
+
 //    private String userName;
     private String displayName;
 //    private String password;

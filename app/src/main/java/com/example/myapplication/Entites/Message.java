@@ -3,12 +3,98 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
+
+import com.example.myapplication.Objects.MessageItem;
 
 import java.util.Calendar;
 import java.util.Date;
 
-@Entity(tableName = "messages_table")
+
+@Entity(tableName = "messages_table",
+        foreignKeys = @ForeignKey(
+                entity = User.class,
+                parentColumns = "userName",
+                childColumns = "senderUserName",
+                onDelete = ForeignKey.CASCADE
+        ),
+        indices = {@Index("senderUserName")})
+public class Message {
+
+    @PrimaryKey
+    @NonNull
+    private String msgID;
+
+    private String content;
+    private String created;
+
+    private String chat_id;
+
+    @ColumnInfo(name = "senderUserName")
+    private String senderUserName;
+
+    public Message(@NonNull String msgID, String content, String created, String senderUserName, String chat_id) {
+        this.msgID = msgID;
+        this.content = content;
+        this.created = created;
+        this.senderUserName = senderUserName;
+        this.chat_id = chat_id;
+    }
+
+
+
+    public Message(@NonNull MessageItem messageItem, String chat_id) {
+        this.msgID = messageItem.getMsgID();
+        this.created = messageItem.getCreated();
+        this.content = messageItem.getContent();
+        this.senderUserName = messageItem.getSender().getUserName();
+        this.chat_id = chat_id;
+    }
+
+    public String getChat_id() {
+        return chat_id;
+    }
+
+    public void setChat_id(String chat_id) {
+        this.chat_id = chat_id;
+    }
+
+    @NonNull
+    public String getMsgID() {
+        return msgID;
+    }
+
+    public void setMsgID(@NonNull String msgID) {
+        this.msgID = msgID;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
+
+    public String getSenderUserName() {
+        return senderUserName;
+    }
+
+    public void setSenderUserName(String senderUserName) {
+        this.senderUserName = senderUserName;
+    }
+}
+
+/*@Entity(tableName = "messages_table")
 public class Message {
 
     @NonNull@PrimaryKey(autoGenerate = true)
@@ -67,4 +153,4 @@ public class Message {
     public void setSenderUserName(String senderUserName) {
         this.senderUserName = senderUserName;
     }
-}
+}*/

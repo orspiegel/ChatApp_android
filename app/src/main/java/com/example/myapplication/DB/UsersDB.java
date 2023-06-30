@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.myapplication.Dao.UserDao;
 import com.example.myapplication.Entites.User;
 
-@Database(entities = {User.class}, version = 2)
+@Database(entities = {User.class}, version = 5)
 public abstract class UsersDB extends RoomDatabase {
     private static UsersDB instance;
     public abstract UserDao userDao();
@@ -44,7 +44,7 @@ public abstract class UsersDB extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            userDao.insert(new User("username", "userDisplayName", "password", "profilePic"));
+            //userDao.insert(new User("username", "userDisplayName", "password", "profilePic"));
             return  null;
         }
 

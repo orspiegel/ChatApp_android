@@ -23,7 +23,7 @@ public interface MessageDao {
     @Delete
     void delete(Message message);
 
-    @Query("SELECT * FROM messages_table WHERE chat_id = :chatID ORDER BY timeStamp DESC LIMIT 1")
+    @Query("SELECT * FROM messages_table WHERE chat_id = :chatID ORDER BY created DESC LIMIT 1")
     Message getLatestMessageFromChat(String chatID);
 
     @Query("SELECT * FROM messages_table WHERE msgID = :id")
@@ -31,4 +31,9 @@ public interface MessageDao {
 
     @Query("SELECT * FROM messages_table")
     List<Message> getAllMessages();
+    @Query("DELETE FROM messages_table WHERE chat_id = :chatID")
+    void deleteChatMessages(String chatID);
+
+    @Query("SELECT * FROM messages_table WHERE chat_id = :chatID")
+    List<Message> getChatMessages(String chatID);
 }

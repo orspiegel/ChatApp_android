@@ -15,6 +15,7 @@ import com.example.myapplication.Entites.Contact;
 import com.example.myapplication.Entites.Message;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.R;
+import com.example.myapplication.State.LoggedUser;
 import com.example.myapplication.Utils.Utils;
 
 import java.util.List;
@@ -24,25 +25,13 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     private Context context;
 
     private List<Message> messageList;
-    private ContactRecyclerViewAdapter.OnContactClickListener onContactClickListener; // New listener
 
-    public MessageRecyclerViewAdapter(Context context) {
+    public MessageRecyclerViewAdapter(Context context, List<Message> messageList) {
         this.context = context;
+        this.messageList = messageList;
         Log.d("adapter", "Entered to adapter");
     }
 
-    public void setContactList(List<Message> messageList) {
-        this.messageList = messageList;
-        notifyDataSetChanged();
-    }
-
-    public void setOnContactClickListener(ContactRecyclerViewAdapter.OnContactClickListener listener) {
-        this.onContactClickListener = listener;
-    }
-
-    public interface OnContactClickListener {
-        void onContactClick(Contact contact);
-    }
 
     public void setMessageList(List<Message> messageList) {
         this.messageList = messageList;
@@ -59,6 +48,14 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public void onBindViewHolder(@NonNull MessageRecyclerViewAdapter.MyViewHolder holder, int position) {
         Message message = messageList.get(position);
+        //holder.sentByMe = (message.getSenderUserName().equals(LoggedUser.getUserName()));
+        holder.sentByMe = false;
+        holder.msgContent.setText("HI!");
+        holder.timeStamp.setText("3:00");
+        holder.senderName.setText("BOB");
+        //holder.timeStamp.setText(message.getCreated());
+        //holder.msgContent.setText(message.getContent());
+        //holder.senderName.setText(message.getSenderUserName());
 
 
     }
@@ -75,12 +72,19 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView timeStamp, msgContent, senderName;
+        public boolean sentByMe;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            senderName = itemView.findViewById(R.id.senderTextView);
-            timeStamp = itemView.findViewById(R.id.timestampTextView);
-            msgContent = itemView.findViewById(R.id.contentTextView);
+            if (sentByMe) {
+                //senderName = itemView.findViewById
+                timeStamp = itemView.findViewById(R.id.text_gchat_timestamp_me);
+                msgContent = itemView.findViewById(R.id.text_gchat_message_me);
+            } else {
+                //senderName = itemView.findViewById(R.id.);
+                timeStamp = itemView.findViewById(R.id.text_gchat_timestamp_other);
+                msgContent = itemView.findViewById(R.id.text_gchat_message_other);
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.example.myapplication.Entites.Chat;
@@ -12,23 +13,24 @@ import com.example.myapplication.Entites.Chat;
 import java.util.List;
 
 @Dao
-public interface ChatsDao
-{
+public interface ChatsDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(Chat chat);
+        @Insert(onConflict = OnConflictStrategy.IGNORE)
+        void insert(Chat chat);
 
-    @Update
-    void update(Chat chat);
+        @Update
+        void update(Chat chat);
 
-    @Delete
-    void delete(Chat chat);
+        @Delete
+        void delete(Chat chat);
 
-    @Query("SELECT * FROM chats_table WHERE chatWithID = :id")
-    Chat getChat(String id);
-    @Query("SELECT * FROM chats_table")
-    List<Chat> getAllChats();
+        @Query("SELECT * FROM chats_table WHERE id = :id")
+        Chat getChat(String id);
 
-
+        @Query("SELECT * FROM chats_table")
+        List<Chat> getAllChats();
+        @Transaction
+        @Query("SELECT * FROM chats_table WHERE id = :id")
+        Chat getChatWithUser(String id);
 
 }
