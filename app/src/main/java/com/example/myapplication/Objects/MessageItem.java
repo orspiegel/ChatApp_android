@@ -5,21 +5,21 @@ import java.util.List;
 public class MessageItem {
     String msgID;
     String created;
-    User sender;
+    String sender;
     String content;
 
-    public MessageItem(String msgID, String created, User sender, String content) {
+    public MessageItem(String msgID, String created, String sender, String content) {
         this.msgID = msgID;
         this.created = created;
         this.sender = sender;
         this.content = content;
     }
 
-    public User getSender() {
+    public String getSender() {
         return sender;
     }
 
-    public void setSender(User sender) {
+    public void setSender(String sender) {
         this.sender = sender;
     }
 

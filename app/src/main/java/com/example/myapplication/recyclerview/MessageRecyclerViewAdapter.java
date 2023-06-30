@@ -49,10 +49,7 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     public void onBindViewHolder(@NonNull MessageRecyclerViewAdapter.MyViewHolder holder, int position) {
         Message message = messageList.get(position);
         //holder.sentByMe = (message.getSenderUserName().equals(LoggedUser.getUserName()));
-        holder.sentByMe = false;
-        holder.msgContent.setText("HI!");
-        holder.timeStamp.setText("3:00");
-        holder.senderName.setText("BOB");
+        //holder.sentByMe = false;
         //holder.timeStamp.setText(message.getCreated());
         //holder.msgContent.setText(message.getContent());
         //holder.senderName.setText(message.getSenderUserName());

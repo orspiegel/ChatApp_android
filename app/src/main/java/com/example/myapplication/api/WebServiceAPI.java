@@ -13,6 +13,7 @@ import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.Objects.MessageResponse;
 import com.example.myapplication.Objects.PathRequest;
 import com.example.myapplication.Objects.TokenRequest;
+import com.example.myapplication.Objects.getAllMessagesResponse;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public interface WebServiceAPI {
     Call<List<ChatResponse>> getContactsList(@Header("Authorization") String authorization);
 
     @GET("Chats/{id}/Messages")
-    Call<List<MessageResponse>> getContactMessages(@Header("Authorization") String authorization, @Path("id") String id);
+    Call<List<getAllMessagesResponse>> getContactMessages(@Header("Authorization") String authorization, @Path("id") String id);
 
 //    @POST("Chats")
 //    Call<AddContactResponse> addContact(@Header("Authorization") String authorization, @Body AddContactRequest addContactRequest);

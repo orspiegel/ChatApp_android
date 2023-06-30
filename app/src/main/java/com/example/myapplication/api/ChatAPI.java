@@ -17,11 +17,13 @@ import com.example.myapplication.Objects.ConversationPageResponse;
 import com.example.myapplication.Objects.MessageItem;
 import com.example.myapplication.Objects.MessageResponse;
 import com.example.myapplication.Objects.User;
+import com.example.myapplication.Objects.getAllMessagesResponse;
 import com.example.myapplication.R;
 import com.example.myapplication.State.LoggedUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,50 +58,51 @@ public class ChatAPI {
     }
 
     public void getChatContent(String chatID) {
-        /*Call<List<MessageResponse>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), chatID);
-        call.enqueue(new Callback<List<MessageResponse>>() {
+        Call<List<getAllMessagesResponse>> call = webServiceAPI.getContactMessages("bearer " + MyApplication.getToken(), chatID);
+        call.enqueue(new Callback<List<getAllMessagesResponse>>() {
             @Override
-            public void onResponse(Call<List<MessageResponse>> call, Response<List<MessageResponse>> response) {
+            public void onResponse(Call<List<getAllMessagesResponse>> call, Response<List<getAllMessagesResponse>> response) {
                 Log.d("MessageResponse", String.valueOf(response.code()));
-                new Thread(() -> {
-                    List<MessageItem> parsedMessages = new ArrayList<>();
-                    for (MessageResponse mR : response.body()) {
-                        Log.i("response", "Res: "+mR.getId());
-                        Log.i("response", "Res: "+mR.getContent());
-                        Log.i("response", "Res: "+mR.getCreated());
-                        Log.i("response", "Res: "+mR.getSender().getUserName());
-                        Log.i("response", "Res: "+mR.getSender().getDisplayName());
-                        Log.i("response", "Res: "+mR.getSender().getProfilePic());
-                        MessageItem parsed = new MessageItem(mR.getId(),
-                                mR.getCreated(),
-                                mR.getSender(),
-                                mR.getContent());
-                        parsedMessages.add(parsed);
-                    }
-                    if (parsedMessages.size() > 0) {
-                        messageDao.deleteChatMessages(chatID);
-                        for (MessageItem mI : parsedMessages) {
-                            Message chatMessage = new Message(mI, chatID);
-                            messageDao.insert(chatMessage);
+                Executors.newSingleThreadExecutor().execute(new Runnable() {
+
+                    public void run() {
+                        List<MessageItem> parsedMessages = new ArrayList<>();
+                        for (getAllMessagesResponse mR : response.body()) {
+                            Log.i("response", "Res: " + mR.get_id());
+                            Log.i("response", "Res: " + mR.getContent());
+                            Log.i("response", "Res: " + mR.getCreated());
+                            Log.i("response", "Res: " + mR.getSender());
+                            MessageItem parsed = new MessageItem(mR.getId(),
+                                    mR.getCreated(),
+                                    mR.getSender().getUserName(),
+                                    mR.getContent());
+                            parsedMessages.add(parsed);
                         }
+                        if (parsedMessages.size() > 0) {
+                            messageDao.deleteChatMessages(chatID);
+                            for (MessageItem mI : parsedMessages) {
+                                Message chatMessage = new Message(mI, chatID);
+                                messageDao.insert(chatMessage);
+                            }
 
-                        for (Message message : messageDao.getChatMessages(chatID)) {
-                            Log.d("insertion complete", message.getChat_id() + " " +
-                                    message.getContent() + " " + message.getCreated() + " " +
-                                    message.getSenderUserName() + " " + message.getMsgID());
+                            for (Message message : messageDao.getChatMessages(chatID)) {
+                                Log.d("insertion complete", message.getChat_id() + " " +
+                                        message.getContent() + " " + message.getCreated() + " " +
+                                        message.getSenderUserName() + " " + message.getMsgID());
 
+                            }
+
+                            messages.postValue(messageDao.getChatMessages(chatID));
                         }
-
-                        messages.postValue(messageDao.getChatMessages(chatID));
                     }
-                }).start();
+                });
             }
 
             @Override
-            public void onFailure(Call<List<MessageResponse>> call, Throwable t) {
+            public void onFailure(Call<List<getAllMessagesResponse>> call, Throwable t) {
                 Log.d("Chat", "Error! "+t);
             }
-        });*/
+        });
     }
 
     public void addMessage(String chatID, String msgContent) {
@@ -115,36 +118,40 @@ public class ChatAPI {
             @Override
             public void onResponse(Call<ConversationPageResponse> call, Response<ConversationPageResponse> response) {
                 Log.d("Chat", String.valueOf(response.code()));
-                new Thread(() -> {
-                    Log.d("Chat", "AHHHHH");
-                    Log.d("LastMessage", response.body().getId() + " " + response.body().getUsers().get(0)
-                    + " " + response.body().getUsers().get(1) + " ");
-                    MessageResponse lastServerMessage = response.body().getMessages()
-                            .get(response.body().getMessages().size()-1);
-                    MessageItem lastMessage = new MessageItem(lastServerMessage.getId(),
-                            lastServerMessage.getCreated(), lastServerMessage.getSender(),
-                            lastServerMessage.getContent());
+                Executors.newSingleThreadExecutor().execute(new Runnable() {
+                    @Override
+                            public void run() {
+                        Log.d("LastMessage", response.body().getId() + " " + response.body().getUsers().get(0)
+                                + " " + response.body().getUsers().get(1) + " " + response.body().getMessages().toString());
+                        MessageResponse lastServerMessage = response.body().getMessages()
+                                .get(response.body().getMessages().size() - 1);
+                        Log.d("lastMessage", lastServerMessage.get_id() + " " + lastServerMessage.getContent() + " " +
+                                lastServerMessage.getCreated() + " " + lastServerMessage.getSender());
+                        MessageItem lastMessage = new MessageItem(lastServerMessage.getId(),
+                                lastServerMessage.getCreated(), lastServerMessage.getSender(),
+                                lastServerMessage.getContent());
 
-                    Message newMessage = new Message(lastMessage, chatID);
-                    long newMsgID = messageDao.insert(newMessage);
+                        Message newMessage = new Message(lastMessage, chatID);
+                        long newMsgID = messageDao.insert(newMessage);
 
-                    if(newMsgID != -1) {
-                        // Successful insertion
-                        System.out.println("Message saved successfully: " + newMessage.getContent());
-                    } else {
-                        // Failure in insertion
-                        System.out.println("Failed to save message");
+                        if (newMsgID != -1) {
+                            // Successful insertion
+                            System.out.println("Message saved successfully: " + newMessage.getContent());
+                        } else {
+                            // Failure in insertion
+                            System.out.println("Failed to save message");
+                        }
+
+                        for (Message msg : messageDao.getAllMessages()) {
+                            Log.d("Current Messages: ", msg.getSenderUserName() + msg.getContent() + msg.getCreated());
+                        }
+
+                        List<Message> newMessageList = messages.getValue();
+                        newMessageList.add(newMessage);
+                        messages.postValue(newMessageList);
                     }
 
-                    for (Message msg : messageDao.getAllMessages()) {
-                        Log.d("Current Messages: ", msg.getSenderUserName() + msg.getContent() + msg.getCreated());
-                    }
-
-                    List<Message> newMessageList = messages.getValue();
-                    newMessageList.add(newMessage);
-                    messages.postValue(newMessageList);
-
-                }).start();
+                });
             }
 
 
