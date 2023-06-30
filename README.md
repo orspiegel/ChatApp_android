@@ -1,6 +1,7 @@
 # ChatApp_android
 Chat app using the MVVM design pattern, with the ability to change theme and change remote URL source.
-Message notifications being updated using firebase.
+
+The message notifications being updated using firebase.
 ![image](https://github.com/orspiegel/ChatApp_android/assets/71634031/5f4a7af0-c582-49d3-8817-c2f936397425)
 
 ## Installation:
