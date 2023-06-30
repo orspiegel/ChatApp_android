@@ -157,6 +157,7 @@ public class ChatActivity extends AppCompatActivity {
         messageAdapter = new MessageRecyclerViewAdapter(this, messages);
         recyclerView.setAdapter(messageAdapter);
 
+
     }
 
     private void loadChatMessages() {

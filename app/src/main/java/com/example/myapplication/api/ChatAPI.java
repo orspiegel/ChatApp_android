@@ -68,10 +68,10 @@ public class ChatAPI {
                     public void run() {
                         List<MessageItem> parsedMessages = new ArrayList<>();
                         for (getAllMessagesResponse mR : response.body()) {
-                            Log.i("response", "Res: " + mR.get_id());
+                            Log.i("response", "Res: " + mR.getId());
                             Log.i("response", "Res: " + mR.getContent());
                             Log.i("response", "Res: " + mR.getCreated());
-                            Log.i("response", "Res: " + mR.getSender());
+                            Log.i("response", "Res: " + mR.getSender().getUserName());
                             MessageItem parsed = new MessageItem(mR.getId(),
                                     mR.getCreated(),
                                     mR.getSender().getUserName(),

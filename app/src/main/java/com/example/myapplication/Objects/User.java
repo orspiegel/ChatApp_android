@@ -11,6 +11,12 @@ public class User {
         this.profilePic = profilePic;
     }
 
+    public User(User user) {
+        this.userName = user.userName;
+        this.displayName = user.displayName;
+        this.profilePic = user.profilePic;
+    }
+
     public String getUserName() {
         return userName;
     }

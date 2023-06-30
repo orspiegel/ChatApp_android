@@ -29,6 +29,7 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     public MessageRecyclerViewAdapter(Context context, List<Message> messageList) {
         this.context = context;
         this.messageList = messageList;
+        notifyDataSetChanged();
         Log.d("adapter", "Entered to adapter");
     }
 
@@ -41,18 +42,23 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public MessageRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.recycler_view, parent, false);
+        View view = inflater.inflate(R.layout.message_wrapper, parent, false);
         return new MessageRecyclerViewAdapter.MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MessageRecyclerViewAdapter.MyViewHolder holder, int position) {
         Message message = messageList.get(position);
-        //holder.sentByMe = (message.getSenderUserName().equals(LoggedUser.getUserName()));
+        //Log.d("userName", message.getSenderUserName());
+        //Log.d("userName", LoggedUser.getUserName());
+        //Log.d("userName", message.getMsgID());
+        //Log.d("userName", message.getCreated().getClass().toString());
+        //Log.d("userName", message.getContent());
+        holder.sentByMe = (message.getSenderUserName().equals(LoggedUser.getUserName()));
         //holder.sentByMe = false;
-        //holder.timeStamp.setText(message.getCreated());
-        //holder.msgContent.setText(message.getContent());
-        //holder.senderName.setText(message.getSenderUserName());
+        holder.timeStamp.setText(message.getCreated());
+        holder.msgContent.setText(message.getContent());
+        //holder.senderName.setText(message.s);
 
 
     }
@@ -74,11 +80,9 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             if (sentByMe) {
-                //senderName = itemView.findViewById
                 timeStamp = itemView.findViewById(R.id.text_gchat_timestamp_me);
                 msgContent = itemView.findViewById(R.id.text_gchat_message_me);
             } else {
-                //senderName = itemView.findViewById(R.id.);
                 timeStamp = itemView.findViewById(R.id.text_gchat_timestamp_other);
                 msgContent = itemView.findViewById(R.id.text_gchat_message_other);
             }
